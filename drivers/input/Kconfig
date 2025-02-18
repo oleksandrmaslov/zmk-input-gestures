@@ -1,0 +1,11 @@
+# Copyright (c) 2022 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+
+DT_COMPAT_ZMK_INPUT_PROCESSOR_GESTURES := zmk,input-processor-gestures
+
+config ZMK_INPUT_PROCESSOR_GESTURES
+		bool
+		default $(dt_compat_enabled,$(DT_COMPAT_ZMK_INPUT_PROCESSOR_GESTURES))
+
+

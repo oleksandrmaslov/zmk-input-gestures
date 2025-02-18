@@ -1,0 +1,8 @@
+
+/ {
+    zip_gestures: zip_gestures {
+        status = "okay";
+        compatible = "zmk,input-processor-gestures";
+        #input-processor-cells = <0>;
+    };
+};

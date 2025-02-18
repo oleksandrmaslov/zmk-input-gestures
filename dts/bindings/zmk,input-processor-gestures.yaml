@@ -1,0 +1,14 @@
+# Copyright (c) 2021 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: Several gestures for touchpads
+
+compatible: "zmk,input-processor-gestures"
+
+include: ip_zero_param.yaml
+
+properties:
+  gestures:
+    type: phandle-array
+
+
