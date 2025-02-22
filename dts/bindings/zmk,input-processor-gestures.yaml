@@ -97,10 +97,3 @@ properties:
       Since Cirque Glidepoint touchpads report around every 10 ms, and some overhead to account
       for intense usage, the default value allows reliable tap detection while being quick enough that
       I can't notice it.
-
-  translate-absolute-to-relative:
-    type: boolean
-    description: |
-      Since ZMK doesn't support absolute mode for pointers but some of the gestures here require absolute mode,
-      this will combine the last previously known position (within the wait-for-new-position-ms time window)
-      with the current position to calculate and report the relative position.

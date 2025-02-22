@@ -36,9 +36,22 @@ static int handle_touch_start(const struct device *dev, struct input_event *even
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
 
-    if (config->tap_detection.enabled) {
-        tap_detection_handle_start(dev, event, param1, param2, state);
+    tap_detection_handle_start(dev, event, param1, param2, state);
+
+    if (event->type == INPUT_EV_ABS) {
+        if (event->code == INPUT_ABS_X) {
+            data->touch_detection.previous_abs_x = event->value;
+        } else if (event->code == INPUT_ABS_Y) {
+            data->touch_detection.previous_abs_y = event->value;
+        }
+    } else if (event->type == INPUT_EV_REL) {
+        if (event->code == INPUT_REL_X) {
+            data->touch_detection.previous_rel_x = event->value;
+        } else if (event->code == INPUT_REL_Y) {
+            data->touch_detection.previous_rel_y = event->value;
+        }
     }
+
     return 0;
 }
 
@@ -57,15 +70,24 @@ static int handle_touch(const struct device *dev, struct input_event *event, uin
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
 
-    if (config->tap_detection.enabled && 
-            data->tap_detection.is_waiting_for_tap &&
-            config->tap_detection.prevent_movement_during_tap) {
-        if (event->type == INPUT_EV_ABS || event->type == INPUT_EV_REL) {
-            event->type = 0;
-            event->code = 0;
-            event->value = 0;
+    tap_detection_handle_touch(dev, event, param1, param2, state);
+
+    uint16_t value = event->value;
+
+    if (event->type == INPUT_EV_ABS) {
+        if (event->code == INPUT_ABS_X) {
+            data->touch_detection.previous_abs_x = value;
+        } else if (event->code == INPUT_ABS_Y) {
+            data->touch_detection.previous_abs_y = value;
+        }
+    } else if (event->type == INPUT_EV_REL) {
+        if (event->code == INPUT_REL_X) {
+            data->touch_detection.previous_rel_x = value;
+        } else if (event->code == INPUT_REL_Y) {
+            data->touch_detection.previous_rel_y = value;
         }
     }
+
     return 0;
 }
 
@@ -103,10 +125,13 @@ static int gestures_init(const struct device *dev) {
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
 
+    LOG_INF("tap_detection: %s", config->tap_detection.enabled ? "yes" : "no");
+
     data->dev = dev;
     data->touch_detection.last_touch_timestamp = k_uptime_get();
     data->touch_detection.all = data;
     data->tap_detection.all = data;
+
     k_work_init_delayable(&data->touch_detection.touch_end_timeout_work, touch_end_timeout_callback);
 
     handle_init(dev);

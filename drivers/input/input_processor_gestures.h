@@ -6,32 +6,22 @@
 
 #pragma once
 
-#include "tap_detection.h"
-
 typedef struct gesture_data gesture_data;
 typedef struct gesture_config_t gesture_config;
+
+#include "tap_detection.h"
 
 struct touch_detection_data {
     bool touching;
     struct k_work_delayable touch_end_timeout_work;
     uint32_t last_touch_timestamp;
+    uint16_t previous_abs_x, previous_abs_y;
+    uint16_t previous_rel_x, previous_rel_y;
     gesture_data *all;
 };
 
 struct touch_detection_config {
     const uint8_t wait_for_new_position_ms;
-};
-
-struct tap_detection_data {
-    bool is_waiting_for_tap;
-    struct k_work_delayable tap_timeout_work;
-    gesture_data *all;
-};
-
-struct tap_detection_config {
-    const bool enabled;
-    const bool prevent_movement_during_tap;
-    const uint8_t tap_timout_ms;
 };
 
 struct inertial_cursor_data {
@@ -56,7 +46,7 @@ struct gesture_data {
 };
 
 struct gesture_config {
-    const bool circular_scroll, right_side_vertical_scroll, top_side_horizontal_scroll, translate_absolute_to_relative;
+    const bool circular_scroll, right_side_vertical_scroll, top_side_horizontal_scroll;
     const uint8_t circular_scroll_rim_percent,
         right_side_vertical_scroll_percent, top_side_horizontal_scroll_percent;
     
