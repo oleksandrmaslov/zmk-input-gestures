@@ -75,6 +75,11 @@ int tap_detection_init(const struct device *dev) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
+    LOG_INF("tap_detection: %s", config->tap_detection.enabled ? "yes" : "no");
+
+    if (!config->tap_detection.enabled) {
+        return -1;
+    }
     k_work_init_delayable(&data->tap_detection.tap_timeout_work, tap_timeout_callback);
 
     return 0;
