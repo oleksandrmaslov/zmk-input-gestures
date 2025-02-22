@@ -8,7 +8,99 @@ compatible: "zmk,input-processor-gestures"
 include: ip_zero_param.yaml
 
 properties:
-  gestures:
-    type: phandle-array
+  tap-detection:
+    type: boolean
+    description: |
+      A touch that doesn't last longer than tap-timout-ms is interpreted as a tap (click).
+  tap-timout-ms:
+    type: int
+    default: 120
+    description: |
+      A lower value requires a quicker tap motion, but reduces accidental taps for short movements. 
+      The default value is a good compromise that works for me.
+  prevent_movement_during_tap:
+    type: boolean
+    description: |
+      While determining if the beginning of a touch is a tap, ignore all other movements.
+      This prevents accidental movement aways from the tap-target, but it makes the 
+      beginning of regular touches more sluggish.
+  
+  inertial-cursor:
+    type: boolean
+    description: |
+      If the cursor moves faster than inertial-cursor-velocity-threshold-ms when the touch ends, the cursor 
+      keeps moving in  the same direction, gradually getting slower by inertial-cursor-decay-percent.
+  inertial-cursor-velocity-threshold-ms:
+    type: int
+    default: 20
+    description: |
+      A lower value makes it easier to activate the inertial, but increases the accidental activation.
+      The default value is a good compromise that works for me.
+  inertial-cursor-decay-percent:
+    type: int
+    default: 98
+    description: |
+      A lower value will make the cursor move longer after the touch ends - kinda like changing the friction that
+      slows down the cursor.
+      The default value mimics a relatively high friction.
+    
+  circular-scroll:
+    type: boolean
+    description: |
+      If a touch begins on the outer circular-scroll-rim-percent percentage of the touchpad, angular
+      movement of the touch is interpreted as scrolling down (clockwise) or up (counter-clockwise).
+  circular-scroll-rim-percent:
+    type: int
+    default: 10
+    description: |
+      Width of the outer ring of the touchpad that activates circular scroll when the touch starts there.
+      A lower value reduces accicental activation during normal usage, but requires better targeting
+      to activate.
+      The default value is a good compromise that works for me.
+    
+  right-side-vertical-scroll:
+    type: boolean
+    description: |
+      If a touch begins on the right right-side-vertical-scroll-percent percentage of the touchpad, vertical
+      movement of the touch is interpreted as vertical scrolling.
+  right-side-vertical-scroll-percent:
+    type: int
+    default: 10
+    description: |
+      Width of the right part of the touchpad that activates vertical scroll when the touch starts there.
+      A lower value reduces accicental activation during normal usage, but requires better targeting
+      to activate.
+      The default value is a good compromise that works for me.
+    
+  top-side-horizontal-scroll:
+    type: boolean
+    description: |
+      If a touch begins on the top top-side-horizontal-scroll-percent percentage of the touchpad, horizontal
+      movement of the touch is interpreted as horizontal scrolling
+  top-side-horizontal-scroll-percent:
+    type: int
+    default: 10
+    description: |
+      Height of the upper part of the touchpad that activates horizontal scroll when the touch starts there.
+      A lower value reduces accicental activation during normal usage, but requires better targeting
+      to activate.
+      The default value is a good compromise that works for me.
 
+  wait-for-new-position-ms:
+    type: int
+    default: 30
+    description: |
+      The time it takes the touchpad to generate a new position in normal usage.
+      Lower values result in better detection when a touch ends, but might trigger accidental
+      taps or other gesture if a new position gets reported after the wait-for-new-position-ms 
+      while the current touch is ongoing.
+      Since Cirque Glidepoint touchpads report around every 10 ms, and some overhead to account
+      for intense usage, the default value allows reliable tap detection while being quick enough that
+      I can't notice it.
 
+  translate-absolute-to-relative:
+    type: boolean
+    description: |
+      Since ZMK doesn't support absolute mode for pointers but some of the gestures here require absolute mode,
+      this will combine the last previously known position (within the wait-for-new-position-ms time window)
+      with the current position to calculate and report the relative position.

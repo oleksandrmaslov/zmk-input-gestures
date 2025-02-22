@@ -8,4 +8,6 @@ config ZMK_INPUT_PROCESSOR_GESTURES
 		bool
 		default $(dt_compat_enabled,$(DT_COMPAT_ZMK_INPUT_PROCESSOR_GESTURES))
 
-
+config INPUT_GESTURES_INIT_PRIORITY
+    int "Touchpad gestures initialization priority"
+    default INPUT_INIT_PRIORITY
