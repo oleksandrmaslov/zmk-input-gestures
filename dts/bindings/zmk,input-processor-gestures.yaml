@@ -57,6 +57,16 @@ properties:
       A lower value reduces accicental activation during normal usage, but requires better targeting
       to activate.
       The default value is a good compromise that works for me.
+  circular-scroll-width:
+    type: int
+    default: 1024
+    description: |
+      Width of the touchpad.
+  circular-scroll-height:
+    type: int
+    default: 1024
+    description: |
+      Height of the touchpad.
     
   right-side-vertical-scroll:
     type: boolean

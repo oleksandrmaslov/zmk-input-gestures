@@ -14,6 +14,7 @@
 
 #include "touch_detection.h"
 #include "tap_detection.h"
+#include "circular_scroll.h"
 
 
 LOG_MODULE_REGISTER(gestures, CONFIG_ZMK_LOG_LEVEL);
@@ -26,18 +27,19 @@ LOG_MODULE_REGISTER(gestures, CONFIG_ZMK_LOG_LEVEL);
 static void handle_init(const struct device *dev) {
     touch_detection_init(dev);
     tap_detection_init(dev);
+    circular_scroll_init(dev);
 }
 
 /**
     Is called when at the beginning of a touch
  */
-static int handle_touch_start(const struct device *dev, struct input_event *event, uint32_t param1,
-                               uint32_t param2, struct zmk_input_processor_state *state) {
+static int handle_touch_start(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
     LOG_DBG("handle_touch_start");
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
 
-    tap_detection_handle_start(dev, event, param1, param2, state);
+    circular_scroll_handle_start(dev, x, y, event);
+    tap_detection_handle_start(dev, x, y, event);
 
     return 0;
 }
@@ -47,19 +49,20 @@ static int handle_touch_start(const struct device *dev, struct input_event *even
  */
 static int handle_touch_end(const struct device *dev) {
     LOG_DBG("handle_touch_end");
+    circular_scroll_handle_end(dev);
     return 0;
 }
 
 /**
     Is called for ongoing touch events
  */
-static int handle_touch(const struct device *dev, struct input_event *event, uint32_t param1,
-                               uint32_t param2, struct zmk_input_processor_state *state) {
+static int handle_touch(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
     LOG_DBG("handle_touch_ongoing");
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
 
-    tap_detection_handle_touch(dev, event, param1, param2, state);
+    tap_detection_handle_touch(dev, x, y, event);
+    circular_scroll_handle_touch(dev, x, y, event);
 
     return 0;
 }
@@ -71,9 +74,9 @@ static int gestures_init(const struct device *dev) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
 
     data->dev = dev;
-    data->touch_detection.last_touch_timestamp = k_uptime_get();
     data->touch_detection.all = data;
     data->tap_detection.all = data;
+    data->circular_scroll.all = data;
 
     handle_init(dev);
     return 0;
@@ -94,12 +97,19 @@ static const struct zmk_input_processor_driver_api gestures_driver_api = {
     static const struct touch_detection_config touch_detection_config_##n = {                                         \
         .wait_for_new_position_ms = DT_INST_PROP(n, wait_for_new_position_ms),                                                      \
     };                                                                                                      \
+    static const struct circular_scroll_config circular_scroll_config_##n = {                                         \
+        .enabled = DT_INST_PROP(n, circular_scroll),                                                      \
+        .circular_scroll_rim_percent = DT_INST_PROP(n, circular_scroll_rim_percent),                                                      \
+        .width = DT_INST_PROP(n, circular_scroll_width),                                                      \
+        .height = DT_INST_PROP(n, circular_scroll_height),                                                      \
+    };                                                                                                      \
     static const struct gesture_config gesture_config_##n = {                                               \
         .handle_touch_start = &handle_touch_start, \
         .handle_touch_continue = &handle_touch, \
         .handle_touch_end = &handle_touch_end, \
         .tap_detection = tap_detection_config_##n,                                               \
         .touch_detection = touch_detection_config_##n,                                               \
+        .circular_scroll = circular_scroll_config_##n,                                               \
     };                                                                                                          \
     DEVICE_DT_INST_DEFINE(n, gestures_init, PM_DEVICE_DT_INST_GET(n), &gesture_data_##n,                    \
                           &gesture_config_##n, POST_KERNEL, CONFIG_INPUT_GESTURES_INIT_PRIORITY,            \

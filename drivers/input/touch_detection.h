@@ -21,6 +21,6 @@ struct touch_detection_config {
     const uint8_t wait_for_new_position_ms;
 };
 
-int touch_detection_init(const struct device *dev);
+handle_init_t touch_detection_init;
 int touch_detection_handle_event(const struct device *dev, struct input_event *event, uint32_t param1,
                                uint32_t param2, struct zmk_input_processor_state *state);

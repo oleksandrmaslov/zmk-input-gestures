@@ -10,8 +10,7 @@
 
 LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
 
-int tap_detection_handle_start(const struct device *dev, struct input_event *event, uint32_t param1,
-                               uint32_t param2, struct zmk_input_processor_state *state) {
+int tap_detection_handle_start(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
@@ -33,8 +32,7 @@ int tap_detection_handle_start(const struct device *dev, struct input_event *eve
     return 0;
 }
 
-int tap_detection_handle_touch(const struct device *dev, struct input_event *event, uint32_t param1,
-                               uint32_t param2, struct zmk_input_processor_state *state) {
+int tap_detection_handle_touch(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
@@ -75,7 +73,10 @@ int tap_detection_init(const struct device *dev) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
-    LOG_INF("tap_detection: %s", config->tap_detection.enabled ? "yes" : "no");
+    LOG_INF("tap_detection: %s, timeout in ms: %d, prevent_movement_during_tap: %s", 
+        config->tap_detection.enabled ? "yes" : "no", 
+        config->tap_detection.tap_timout_ms,
+        config->tap_detection.prevent_movement_during_tap ? "yes" : "no");
 
     if (!config->tap_detection.enabled) {
         return -1;
