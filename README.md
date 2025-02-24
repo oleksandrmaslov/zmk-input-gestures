@@ -13,7 +13,7 @@ in order to reset it or switch to bootloader mode.
 To be clear: right now, this is not for the faint of heart.
 
 **Before you start, you should make sure that you have a working
-input devive by following this: https://zmk.dev/docs/features/pointing**
+input device by following this: https://zmk.dev/docs/features/pointing**
 
 ## Table of Contents
 
@@ -26,6 +26,7 @@ input devive by following this: https://zmk.dev/docs/features/pointing**
   * [Activate absolute mode for cirque glidepoint](#activate-absolute-mode-for-cirque-glidepoint)
   * [Translate absolute to relative positions](#translate-absolute-to-relative-positions)
   * [Configure some gestures and add them](#configure-some-gestures-and-add-them)
+  * [Increase the Stack Size](#increase-the-stack-size)
 * [Gestures](#gestures)
   * [Tap Detection (Absolute and Relative Mode)](#tap-detection-absolute-and-relative-mode)
   * [Inertial Cursor (Absolute and Relative Mode - Not implemented.)](#inertial-cursor-absolute-and-relative-mode---not-implemented)
@@ -221,6 +222,17 @@ Add the gesture input processor to the list of input-processors:
         >;
 ```
 
+### Increase the Stack Size
+
+You may encounter instabilities when using calculation intense gestures.
+I found that increasing stack sizes helps.
+
+Add this to your `.conf` file:
+
+```
+CONFIG_MAIN_STACK_SIZE=4096
+CONFIG_INPUT_THREAD_STACK_SIZE=4096
+```
 
 ## Gestures
 
