@@ -2,7 +2,8 @@
 
 This repository contains a collection of gestures that interpret data from p.e. touchpads.
 
-Some of these gestures require absolute positioning data, which isn't natively supported by ZMK. 
+Some of these gestures require absolute positioning data, which isn't natively supported by ZMK,
+but a modified driver for the cirque touchpad is available.
 
 Although most of this code seems to work fine, please note that
 it's very new and there absolutely can be bugs that might crash
@@ -14,6 +15,28 @@ To be clear: right now, this is not for the faint of heart.
 **Before you start, you should make sure that you have a working
 input devive by following this: https://zmk.dev/docs/features/pointing**
 
+## Table of Contents
+
+* [Relative and Absolute Mode](#relative-and-absolute-mode)
+* [Supported gestures](#supported-gestures)
+* [Planned gestures](#planned-gestures)
+* [Installation &amp; Usage](#installation--usage)
+  * [west.yml](#westyml)
+  * [Import the dependencies](#import-the-dependencies)
+  * [Activate absolute mode for cirque glidepoint](#activate-absolute-mode-for-cirque-glidepoint)
+  * [Translate absolute to relative positions](#translate-absolute-to-relative-positions)
+  * [Configure some gestures and add them](#configure-some-gestures-and-add-them)
+* [Gestures](#gestures)
+  * [Tap Detection (Absolute and Relative Mode)](#tap-detection-absolute-and-relative-mode)
+  * [Inertial Cursor (Absolute and Relative Mode - Not implemented.)](#inertial-cursor-absolute-and-relative-mode---not-implemented)
+  * [Circular Scroll (Absolute Mode only!)](#circular-scroll-absolute-mode-only)
+  * [Right-Side Vertical Scroll (Absolute Mode only! Not implemented.)](#right-side-vertical-scroll-absolute-mode-only-not-implemented)
+  * [Top-Side Horizontal Scroll (Absolute Mode only! Not implemented.)](#top-side-horizontal-scroll-absolute-mode-only-not-implemented)
+  * [Wait for New Position](#wait-for-new-position)
+* [Configuration options for absolute mode in cirque glidepad driver](#configuration-options-for-absolute-mode-in-cirque-glidepad-driver)
+  * [Absolute Mode](#absolute-mode)
+
+
 ## Relative and Absolute Mode
 
 In **relative mode**, the input device reports the change that happened
@@ -24,7 +47,8 @@ moved an amount of pixels up.
 In **absolute mode** however, the input device reports the position
 of a touch on a touchpad: the top left might be x=1024/y=998 or so.
 
-In order to detect whether or not a touch has happened on the outer perimeter of a touchpad, it's necessary to know the absolute position of the touch.
+In order to detect whether or not a touch has happened on the outer perimeter of a touchpad, it's necessary to know the absolute position of the touch, so some of the gestures are 
+only doing anything if you're using absolute mode.
 
 As of now, ZMK doesn't support absolute mode natively, so to use the gestures that depend on it, a bit more work is necessary. But not much: the pieces are all there, you just need to put them in the right places.
 
@@ -49,7 +73,7 @@ To use these gestures, there are several steps necessary:
 
 We'll go through these steps one by one now.
 
-### west.yml
+### Adjust west.yml
 
 Depending on whether or not you want to use gestures that rely on absolute mode,
 you need to add one or more of these:
@@ -88,7 +112,8 @@ manifest:
 
 ```
 
-Run `west update` if you're building on your local machine (not github actions).
+> [!WARNING]  
+> Run `west update` if you're building on your local machine (not github actions).
 
 ### Import the dependencies
 Since you're already using the `cirque-input-module`, you don't need to import that again.
@@ -180,6 +205,23 @@ This configuration should be at the top level of your devicetree, not within any
 };
 ```
 
+Add the gesture input processor to the list of input-processors:
+
+```devicetree
+        input-processors = <
+            // the gesture input processor should come before 
+            // zip_absolute_to_relative
+            &zip_gestures
+
+            // You have this line only if you're using absolute mode
+            &zip_absolute_to_relative
+
+            &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_Y_INVERT)
+            &zip_temp_layer 3 100
+        >;
+```
+
+
 ## Gestures
 
 Activate and configure the gestures by adding the corresponding lines to the predefined `&zip_gesture` container like so:
@@ -226,8 +268,8 @@ Make sure you have absolute mode activated, otherwise this won't do anything
 **Configuration Options:**
 - `circular-scroll;`: Activates the circular scroll feature.
 - `circular-scroll-rim-percent=<10>;`: Sets the percentage width of the outer ring of the touchpad that activates circular scroll. A lower value reduces accidental activation during normal usage but requires better targeting to activate.
-- `circular-scroll-width=<1024>;`: Sets the width of the touchpad. If your device driver supports scaling to a target interval you  should make sure to use the same values. See the chapter about the cirque-driver below, if you want to change this, but you probably shouldn't.
-- `circular-scroll-height=<1024>;`: Sets the height of the touchpad. If your device driver supports scaling to a target interval you  should make sure to use the same values. See the chapter about the cirque-driver below, if you want to change this, but you probably shouldn't.
+- `circular-scroll-width=<1024>;`: Sets the width of the touchpad. If your device driver supports scaling to a target interval you should make sure to use the same values. See the [section about the cirque-driver](#configuration-options-for-absolute-mode-in-cirque-glidepad-driver) below, if you want to change this, but you probably shouldn't.
+- `circular-scroll-height=<1024>;`: Sets the height of the touchpad. If your device driver supports scaling to a target interval you should make sure to use the same values. See the [section about the cirque-driver](#configuration-options-for-absolute-mode-in-cirque-glidepad-driver) below, if you want to change this, but you probably shouldn't.
 
 ### Right-Side Vertical Scroll (Absolute Mode only! Not implemented.)
 
