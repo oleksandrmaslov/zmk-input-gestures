@@ -7,8 +7,7 @@ but a modified driver for the cirque touchpad is available.
 
 Although most of this code seems to work fine, please note that
 it's very new and there absolutely can be bugs that might crash
-your keyboard, so that you need physical access to your shield 
-in order to reset it or switch to bootloader mode.
+your keyboard, so that you need to physically press the reset button so you can p.e. flash a previously known uf2 file. That won't be a problem for most people, but not all boards have easy access to these buttons.
 
 To be clear: right now, this is not for the faint of heart.
 
