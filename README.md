@@ -11,7 +11,8 @@ your keyboard, so that you need to physically press the reset button so you can 
 
 To be clear: right now, this is not for the faint of heart.
 
-**Before you start, you should make sure that you have a working
+> [!WARNING]  
+> **Before you start, you should make sure that you have a working
 input device by following this: https://zmk.dev/docs/features/pointing**
 
 ## Table of Contents
@@ -329,12 +330,18 @@ Report the position of a touch on the touchpad as absolute positions instead of 
 
 ## Troubleshooting
 
+Describing some problems that people have encountered, and how to address them.
+
+Please let me know if you get stuck, I'm happy to help you!
+
 ### My build fails with `Assembler messages Error: missing expression`
 In github actions, it might look like this:
 ```
 /tmp/cc51TXht.s: Assembler messages:
 /tmp/cc51TXht.s:1131: Error: missing expression
 ```
+
+I *think* I have addressed that problem, so please let me know if you see this!
 
 Try activating `ZMK_POINTING` as described in https://zmk.dev/docs/features/pointing
 
