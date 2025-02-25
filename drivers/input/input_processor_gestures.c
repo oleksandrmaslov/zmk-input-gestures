@@ -47,8 +47,8 @@ static int handle_touch(const struct device *dev, uint16_t x, uint16_t y, struct
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
 
-    tap_detection_handle_touch(dev, x, y, event);
     circular_scroll_handle_touch(dev, x, y, event);
+    tap_detection_handle_touch(dev, x, y, event);
 
     return 0;
 }

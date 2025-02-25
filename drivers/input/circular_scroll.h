@@ -10,10 +10,11 @@
 
 struct circular_scroll_data {
     bool is_tracking;
-    uint32_t previous_angle;
+    uint16_t previous_angle;
     gesture_data *all;
 
-    uint16_t threshold, half_width, half_height;
+    uint16_t half_width, half_height;
+    uint32_t inner_radius_squared, outer_radius_squared;
 };
 
 struct circular_scroll_config {
