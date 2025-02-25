@@ -324,8 +324,17 @@ Report the position of a touch on the touchpad as absolute positions instead of 
 
 **Configuration Options:**
 - `absolute-mode;`: Activates the absolute mode
-- `absolute-mode-scale-to-width=<1024>;`: Scale reported X-positions so they are in the interval [0-1024].
-- `absolute-mode-scale-to-height=<1024>;`: Scale reported X-positions so they are in the interval [0-1024].
+- `absolute-mode-scale-to-width=<1024>;`: Scale reported X-positions so they are in the interval [0-1024]. You shouldn't need to change this, but if you do, make sure to adjust the width for gestures in absolute mode, like [for circular scrolling](#circular-scroll-absolute-mode-only)
+- `absolute-mode-scale-to-height=<1024>;`: Scale reported X-positions so they are in the interval [0-1024]. You shouldn't need to change this, but if you do, make sure to adjust the height for gestures in absolute mode, like [for circular scrolling](#circular-scroll-absolute-mode-only)
+- `absolute-mode-clamp-min-x=<128>;`: Cirque's specification says that active reporting of absolute position
+      is: 128 ≤ X ≤1920 and 64 ≤ Y ≤ 1472, but on my touchpad, I need other values so it's configurable.
+- `absolute-mode-clamp-max-x=<1920>;`: Cirque's specification says that active reporting of absolute position
+      is: 128 ≤ X ≤1920 and 64 ≤ Y ≤ 1472, but on my touchpad, I need other values so it's configurable.
+- `absolute-mode-clamp-min-y=<64>;`: Cirque's specification says that active reporting of absolute position
+      is: 128 ≤ X ≤1920 and 64 ≤ Y ≤ 1472, but on my touchpad, I need other values so it's configurable.
+- `absolute-mode-clamp-max-y=<1472>;`: 
+      Cirque's specification says that active reporting of absolute position
+      is: 128 ≤ X ≤1920 and 64 ≤ Y ≤ 1472, but on my touchpad, I need other values so it's configurable.
 
 
 ## Troubleshooting
