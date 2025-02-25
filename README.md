@@ -35,7 +35,8 @@ input device by following this: https://zmk.dev/docs/features/pointing**
   * [Wait for New Position](#wait-for-new-position)
 * [Configuration options for absolute mode in cirque glidepad driver](#configuration-options-for-absolute-mode-in-cirque-glidepad-driver)
   * [Absolute Mode](#absolute-mode)
-
+* [Troubleshooting](#troubleshooting)
+  * [My build fails with Assembler messages Error: missing expression](#my-build-fails-with-assembler-messages-error-missing-expression)
 
 ## Relative and Absolute Mode
 
@@ -324,3 +325,16 @@ Report the position of a touch on the touchpad as absolute positions instead of 
 - `absolute-mode;`: Activates the absolute mode
 - `absolute-mode-scale-to-width=<1024>;`: Scale reported X-positions so they are in the interval [0-1024].
 - `absolute-mode-scale-to-height=<1024>;`: Scale reported X-positions so they are in the interval [0-1024].
+
+
+## Troubleshooting
+
+### My build fails with `Assembler messages Error: missing expression`
+In github actions, it might look like this:
+```
+/tmp/cc51TXht.s: Assembler messages:
+/tmp/cc51TXht.s:1131: Error: missing expression
+```
+
+Try activating `ZMK_POINTING` as described in https://zmk.dev/docs/features/pointing
+
