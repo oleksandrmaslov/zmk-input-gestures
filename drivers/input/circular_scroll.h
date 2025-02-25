@@ -13,7 +13,7 @@ struct circular_scroll_data {
     uint32_t previous_angle;
     gesture_data *all;
 
-    uint16_t threshold;
+    uint16_t threshold, half_width, half_height;
 };
 
 struct circular_scroll_config {

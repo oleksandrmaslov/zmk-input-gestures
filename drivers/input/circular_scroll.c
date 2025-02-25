@@ -11,14 +11,21 @@
 #include "input_processor_gestures.h"
 #include "circular_scroll.h"
 
+#define M_PI acos(-1.0)
+
 LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
 
-static bool is_touch_on_perimeter(uint16_t x, uint16_t y, struct gesture_data *data) {
+static bool is_touch_on_perimeter(uint16_t x, uint16_t y, struct gesture_config *config, struct gesture_data *data) {
     return (
         x < data->circular_scroll.threshold || 
-        x > (config.width - data->circular_scroll.threshold) || 
+        x > (config->circular_scroll.width - data->circular_scroll.threshold) || 
         y < data->circular_scroll.threshold ||
-        y > (config.height - data->circular_scroll.threshold));
+        y > (config->circular_scroll.height - data->circular_scroll.threshold));
+}
+
+// Normalize an angle to be between -pi and pi.
+static uint32_t normalize_angle(uint32_t angle) {
+    return remainder(angle + M_PI, (2 * M_PI) - M_PI);
 }
 
 // Function to calculate the angle of the touch point relative to the center
@@ -29,13 +36,12 @@ static uint32_t calculate_angle(uint16_t x, uint16_t y, struct gesture_data *dat
 int circular_scroll_handle_start(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
-    
     if (!config->circular_scroll.enabled) {
         return -1;
     }
 
     // Check if the touch starts on the perimeter
-    if (event->type == INPUT_EV_ABS && is_touch_on_perimeter(x, y, data)) {
+    if (event->type == INPUT_EV_ABS && is_touch_on_perimeter(x, y, config, data)) {
         data->circular_scroll.is_tracking = true;
         data->circular_scroll.previous_angle = calculate_angle(x, y, data);
         LOG_DBG("starting circular scrolling with angle %d!", data->circular_scroll.previous_angle);
@@ -54,7 +60,7 @@ int circular_scroll_handle_touch(const struct device *dev, uint16_t x, uint16_t 
 
     if (event->type == INPUT_EV_ABS) {
         uint32_t current_angle = calculate_angle(x, y, data);
-        uint32_t angle_diff = current_angle - data->circular_scroll.previous_angle;
+        uint32_t angle_diff = normalize_angle(current_angle - data->circular_scroll.previous_angle);
         LOG_DBG("Continuing circular scroll. angle: %d, angle diff: %d", current_angle, angle_diff);
 
         // Convert angular movement to scroll events
@@ -92,7 +98,7 @@ int circular_scroll_init(const struct device *dev) {
         return -1;
     }
 
-    data->circular_scroll.threshold = (config->circular_scroll.width + config->circular_scroll.height) * (config.circular_scroll_rim_percent / 2);
+    data->circular_scroll.threshold = (config->circular_scroll.width + config->circular_scroll.height) * (config->circular_scroll.circular_scroll_rim_percent / 2);
     data->circular_scroll.threshold /= 100;
     data->circular_scroll.half_width = config->circular_scroll.width / 2;
     data->circular_scroll.half_height = config->circular_scroll.height / 2;
