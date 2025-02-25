@@ -34,7 +34,7 @@ input device by following this: https://zmk.dev/docs/features/pointing**
   * [Right-Side Vertical Scroll (Absolute Mode only! Not implemented.)](#right-side-vertical-scroll-absolute-mode-only-not-implemented)
   * [Top-Side Horizontal Scroll (Absolute Mode only! Not implemented.)](#top-side-horizontal-scroll-absolute-mode-only-not-implemented)
   * [Wait for New Position](#wait-for-new-position)
-* [Configuration options for absolute mode in cirque glidepad driver](#configuration-options-for-absolute-mode-in-cirque-glidepad-driver)
+* [Configuration options for cirque glidepad driver](#configuration-options-for-cirque-glidepad-driver)
   * [Absolute Mode](#absolute-mode)
 * [Troubleshooting](#troubleshooting)
   * [My build fails with Assembler messages Error: missing expression](#my-build-fails-with-assembler-messages-error-missing-expression)
@@ -315,9 +315,14 @@ The time it takes the touchpad to generate a new position in normal usage. Lower
 - `wait-for-new-position-ms=<30>`: Sets the time in milliseconds to wait for a new position. The default value allows reliable tap detection while being quick enough to go unnoticed.
 
 
-## Configuration options for absolute mode in cirque glidepad driver
+## Configuration options for cirque glidepad driver
 
 ### Absolute Mode
+Absolute mode is available in my own fork of pete's cirque driver that you included in
+the `west.yml` [as described above](#adjust-westyml).
+
+The fork provides a few configuration options that might be helpful if the gestures
+that depend on absolute mode don't behave as expected.
 
 **Description:**
 Report the position of a touch on the touchpad as absolute positions instead of just the change relative to the previous touch.
