@@ -11,8 +11,7 @@ your keyboard, so that you need to physically press the reset button so you can 
 
 To be clear: right now, this is not for the faint of heart.
 
-> [!WARNING]  
-> **Before you start, you should make sure that you have a working
+**Before you start, you should make sure that you have a working
 input device by following this: https://zmk.dev/docs/features/pointing**
 
 ## Table of Contents
@@ -34,10 +33,9 @@ input device by following this: https://zmk.dev/docs/features/pointing**
   * [Right-Side Vertical Scroll (Absolute Mode only! Not implemented.)](#right-side-vertical-scroll-absolute-mode-only-not-implemented)
   * [Top-Side Horizontal Scroll (Absolute Mode only! Not implemented.)](#top-side-horizontal-scroll-absolute-mode-only-not-implemented)
   * [Wait for New Position](#wait-for-new-position)
-* [Configuration options for cirque glidepad driver](#configuration-options-for-cirque-glidepad-driver)
+* [Configuration options for absolute mode in cirque glidepad driver](#configuration-options-for-absolute-mode-in-cirque-glidepad-driver)
   * [Absolute Mode](#absolute-mode)
-* [Troubleshooting](#troubleshooting)
-  * [My build fails with Assembler messages Error: missing expression](#my-build-fails-with-assembler-messages-error-missing-expression)
+
 
 ## Relative and Absolute Mode
 
@@ -315,47 +313,14 @@ The time it takes the touchpad to generate a new position in normal usage. Lower
 - `wait-for-new-position-ms=<30>`: Sets the time in milliseconds to wait for a new position. The default value allows reliable tap detection while being quick enough to go unnoticed.
 
 
-## Configuration options for cirque glidepad driver
+## Configuration options for absolute mode in cirque glidepad driver
 
 ### Absolute Mode
-Absolute mode is available in my own fork of pete's cirque driver that you included in
-the `west.yml` [as described above](#adjust-westyml).
-
-The fork provides a few configuration options that might be helpful if the gestures
-that depend on absolute mode don't behave as expected.
 
 **Description:**
 Report the position of a touch on the touchpad as absolute positions instead of just the change relative to the previous touch.
 
 **Configuration Options:**
 - `absolute-mode;`: Activates the absolute mode
-- `absolute-mode-scale-to-width=<1024>;`: Scale reported X-positions so they are in the interval [0-1024]. You shouldn't need to change this, but if you do, make sure to adjust the width for gestures in absolute mode, like [for circular scrolling](#circular-scroll-absolute-mode-only)
-- `absolute-mode-scale-to-height=<1024>;`: Scale reported X-positions so they are in the interval [0-1024]. You shouldn't need to change this, but if you do, make sure to adjust the height for gestures in absolute mode, like [for circular scrolling](#circular-scroll-absolute-mode-only)
-- `absolute-mode-clamp-min-x=<128>;`: Cirque's specification says that active reporting of absolute position
-      is: 128 ≤ X ≤1920 and 64 ≤ Y ≤ 1472, but on my touchpad, I need other values so it's configurable.
-- `absolute-mode-clamp-max-x=<1920>;`: Cirque's specification says that active reporting of absolute position
-      is: 128 ≤ X ≤1920 and 64 ≤ Y ≤ 1472, but on my touchpad, I need other values so it's configurable.
-- `absolute-mode-clamp-min-y=<64>;`: Cirque's specification says that active reporting of absolute position
-      is: 128 ≤ X ≤1920 and 64 ≤ Y ≤ 1472, but on my touchpad, I need other values so it's configurable.
-- `absolute-mode-clamp-max-y=<1472>;`: 
-      Cirque's specification says that active reporting of absolute position
-      is: 128 ≤ X ≤1920 and 64 ≤ Y ≤ 1472, but on my touchpad, I need other values so it's configurable.
-
-
-## Troubleshooting
-
-Describing some problems that people have encountered, and how to address them.
-
-Please let me know if you get stuck, I'm happy to help you!
-
-### My build fails with `Assembler messages Error: missing expression`
-In github actions, it might look like this:
-```
-/tmp/cc51TXht.s: Assembler messages:
-/tmp/cc51TXht.s:1131: Error: missing expression
-```
-
-I *think* I have addressed that problem, so please let me know if you see this!
-
-Try activating `ZMK_POINTING` as described in https://zmk.dev/docs/features/pointing
-
+- `absolute-mode-scale-to-width=<1024>;`: Scale reported X-positions so they are in the interval [0-1024].
+- `absolute-mode-scale-to-height=<1024>;`: Scale reported X-positions so they are in the interval [0-1024].
