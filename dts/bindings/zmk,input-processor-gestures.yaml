@@ -32,13 +32,13 @@ properties:
       keeps moving in  the same direction, gradually getting slower by inertial-cursor-decay-percent.
   inertial-cursor-velocity-threshold:
     type: int
-    default: 5
+    default: 10
     description: |
       A lower value makes it easier to activate the inertial, but increases the accidental activation.
       The default value is a good compromise that works for me.
   inertial-cursor-decay-percent:
     type: int
-    default: 98
+    default: 5
     description: |
       A lower value will make the cursor move longer after the touch ends - kinda like changing the friction that
       slows down the cursor.

@@ -31,7 +31,7 @@ static int handle_touch_start(const struct device *dev, uint16_t x, uint16_t y, 
     LOG_DBG("handle_touch_start");
     circular_scroll_handle_start(dev, x, y, event);
     tap_detection_handle_start(dev, x, y, event);
-    inertial_cursor_handle_touch(dev, x, y, event);
+    inertial_cursor_handle_touch_start(dev, x, y, event);
     return 0;
 }
 

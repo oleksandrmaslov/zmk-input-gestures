@@ -95,7 +95,7 @@ int circular_scroll_handle_end(const struct device *dev) {
 int circular_scroll_init(const struct device *dev) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
-    LOG_INF("circular_scroll: %s, rim_percent: %d, width: %d, height: %d", 
+    LOG_DBG("circular_scroll: %s, rim_percent: %d, width: %d, height: %d", 
         config->circular_scroll.enabled ? "yes" : "no", 
         config->circular_scroll.circular_scroll_rim_percent,
         config->circular_scroll.width,

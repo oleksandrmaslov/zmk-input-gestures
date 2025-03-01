@@ -63,7 +63,7 @@ static void tap_timeout_callback(struct k_work *work) {
     if (!data->all->touch_detection.touching) {
         LOG_DBG("tap detected - sending button presses");
         zmk_hid_mouse_button_press(0);
-        zmk_usb_hid_send_mouse_report();    
+        zmk_usb_hid_send_mouse_report();
         zmk_hid_mouse_button_release(0);
         zmk_usb_hid_send_mouse_report();
     } else {
@@ -75,7 +75,7 @@ int tap_detection_init(const struct device *dev) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
-    LOG_INF("tap_detection: %s, timeout in ms: %d, prevent_movement_during_tap: %s", 
+    LOG_DBG("tap_detection: %s, timeout in ms: %d, prevent_movement_during_tap: %s", 
         config->tap_detection.enabled ? "yes" : "no", 
         config->tap_detection.tap_timout_ms,
         config->tap_detection.prevent_movement_during_tap ? "yes" : "no");
