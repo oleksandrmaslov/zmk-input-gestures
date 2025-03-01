@@ -1,13 +1,15 @@
 # ZMK INPUT GESTURES
 
-This repository contains a collection of gestures that interpret data from p.e. touchpads.
+This repository contains a collection of gestures touchpads like the cirque glidepoint.
 
 Some of these gestures require absolute positioning data, which isn't natively supported by ZMK,
 but a modified driver for the cirque touchpad is available.
 
 Although most of this code seems to work fine, please note that
 it's very new and there absolutely can be bugs that might crash
-your keyboard, so that you need to physically press the reset button so you can p.e. flash a previously known uf2 file. That won't be a problem for most people, but not all boards have easy access to these buttons.
+your keyboard, so that you need to physically press the reset button 
+to flash a previously known-to-work uf2 file. That won't be a problem for most people, 
+but not all boards have easy access to these buttons.
 
 To be clear: right now, this is not for the faint of heart.
 
@@ -20,7 +22,7 @@ input device by following this: https://zmk.dev/docs/features/pointing**
 * [Supported gestures](#supported-gestures)
 * [Planned gestures](#planned-gestures)
 * [Installation &amp; Usage](#installation--usage)
-  * [west.yml](#westyml)
+  * [Adjust west.yml](#adjust-westyml)
   * [Import the dependencies](#import-the-dependencies)
   * [Activate absolute mode for cirque glidepoint](#activate-absolute-mode-for-cirque-glidepoint)
   * [Translate absolute to relative positions](#translate-absolute-to-relative-positions)
@@ -28,7 +30,7 @@ input device by following this: https://zmk.dev/docs/features/pointing**
   * [Increase the Stack Size](#increase-the-stack-size)
 * [Gestures](#gestures)
   * [Tap Detection (Absolute and Relative Mode)](#tap-detection-absolute-and-relative-mode)
-  * [Inertial Cursor (Absolute and Relative Mode - Not implemented.)](#inertial-cursor-absolute-and-relative-mode---not-implemented)
+  * [Inertial Cursor (Absolute and Relative Mode)](#inertial-cursor-absolute-and-relative-mode)
   * [Circular Scroll (Absolute Mode only!)](#circular-scroll-absolute-mode-only)
   * [Right-Side Vertical Scroll (Absolute Mode only! Not implemented.)](#right-side-vertical-scroll-absolute-mode-only-not-implemented)
   * [Top-Side Horizontal Scroll (Absolute Mode only! Not implemented.)](#top-side-horizontal-scroll-absolute-mode-only-not-implemented)
@@ -56,10 +58,10 @@ As of now, ZMK doesn't support absolute mode natively, so to use the gestures th
 
 - Tap (all modes): translate quick touches to a mouse click
 - Circular Scroll (absolute mode only): translate angular movement to scroll events
+- Inertial Cursor (all modes): keep the cursor moving after the touch ends
 
 ## Planned gestures
 
-- Inertial Cursor (all modes): keep the cursor moving after the touch ends
 - Right side vertical scroll (absolute mode only): translate vertical movement to vertical scroll events
 - Top side horizontal scroll (absolute mode only): translate horizontal movement to horizontal scroll events
 
@@ -258,17 +260,15 @@ A touch that doesn't last longer than `tap-timout-ms` is interpreted as a tap (c
 - `tap-timout-ms=<120>;`: Sets the timeout in milliseconds for detecting a tap. A lower value requires a quicker tap motion but reduces accidental taps for short movements.
 - `prevent_movement_during_tap;`: While determining if the beginning of a touch is a tap, ignore all other movements. This prevents accidental movement away from the tap-target but makes the beginning of regular touches more sluggish.
 
-### Inertial Cursor (Absolute and Relative Mode - Not implemented.)
+### Inertial Cursor (Absolute and Relative Mode)
 
-THIS ISN'T IMPLEMENTED YET!
+**Description:**
+If the cursor moves faster than `inertial-cursor-velocity-threshold-ms` when the touch ends, the cursor keeps moving in the same direction, gradually slowing down by `inertial-cursor-decay-percent`.
 
-> **Description:**
-> If the cursor moves faster than `inertial-cursor-velocity-threshold-ms` when the touch ends, the cursor keeps moving in the same direction, gradually slowing down by `inertial-cursor-decay-percent`.
-> 
-> **Configuration Options:**
-> - `inertial-cursor;`: Activates the inertial cursor feature.
-> - `inertial-cursor-velocity-threshold-ms=<20>;`: Sets the velocity threshold in milliseconds for activating inertial movement. A lower value makes it easier to activate but increases accidental activation.
-> - `inertial-cursor-decay-percent=<98>;`: Sets the decay percentage for the cursor's inertial movement. A lower value makes the cursor move longer after the touch ends, mimicking lower friction.
+**Configuration Options:**
+- `inertial-cursor;`: Activates the inertial cursor feature.
+- `inertial-cursor-velocity-threshold-ms=<20>;`: Sets the velocity threshold in milliseconds for activating inertial movement. A lower value makes it easier to activate but increases accidental activation.
+- `inertial-cursor-decay-percent=<98>;`: Sets the decay percentage for the cursor's inertial movement. A lower value makes the cursor move longer after the touch ends, mimicking lower friction.
 
 ### Circular Scroll (Absolute Mode only!)
 
