@@ -46,11 +46,13 @@ static double normalizeAngleDifference(uint16_t angle1, uint16_t angle2) {
 int circular_scroll_handle_start(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
-    if (!config->circular_scroll.enabled) {
+    if (!config->circular_scroll.enabled || event->type != INPUT_EV_ABS) {
         return -1;
     }
 
-    if (event->type == INPUT_EV_ABS && is_touch_on_perimeter(x, y, config, data)) {
+
+
+    if (is_touch_on_perimeter(x, y, config, data)) {
         data->circular_scroll.is_tracking = true;
         data->circular_scroll.previous_angle = calculate_angle(x, y, config, data);
         LOG_DBG("starting circular scrolling with angle %d!", data->circular_scroll.previous_angle);

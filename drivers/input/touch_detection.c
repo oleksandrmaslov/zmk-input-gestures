@@ -65,8 +65,6 @@ void touch_end_timeout_callback(struct k_work *work) {
 
 int touch_detection_init(const struct device *dev) {
     struct gesture_data *data = (struct gesture_data *)dev->data;
-    struct gesture_config *config = (struct gesture_config *)dev->config;
-
     data->touch_detection.last_touch_timestamp = k_uptime_get();
     k_work_init_delayable(&data->touch_detection.touch_end_timeout_work, touch_end_timeout_callback);
     return 0;

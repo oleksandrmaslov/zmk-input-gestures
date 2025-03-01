@@ -6,6 +6,8 @@
 
 #include <drivers/input_processor.h>
 #include <zephyr/logging/log.h>
+#include <zmk/hid.h>
+#include <zmk/usb_hid.h>
 #include "input_processor_gestures.h"
 
 LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
