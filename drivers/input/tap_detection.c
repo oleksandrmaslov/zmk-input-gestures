@@ -12,7 +12,7 @@
 
 LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
 
-int tap_detection_handle_start(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
+int tap_detection_handle_start(const struct device *dev, struct gesture_event_t *event) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
@@ -24,17 +24,19 @@ int tap_detection_handle_start(const struct device *dev, uint16_t x, uint16_t y,
     data->tap_detection.is_waiting_for_tap = true;
 
     if (config->tap_detection.prevent_movement_during_tap) {
-        if (event->type == INPUT_EV_ABS || event->type == INPUT_EV_REL) {
-            event->type = 0;
-            event->code = 0;
-            event->value = 0;
-        }
+        event->raw_event_1->code = 0;
+        event->raw_event_1->type = 0;
+        event->raw_event_1->value = 0;
+
+        event->raw_event_2->code = 0;
+        event->raw_event_2->type = 0;
+        event->raw_event_2->value = 0;
     }
 
     return 0;
 }
 
-int tap_detection_handle_touch(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
+int tap_detection_handle_touch(const struct device *dev, struct gesture_event_t *event) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
@@ -43,13 +45,14 @@ int tap_detection_handle_touch(const struct device *dev, uint16_t x, uint16_t y,
     }
 
     if (data->tap_detection.is_waiting_for_tap && config->tap_detection.prevent_movement_during_tap) {
-        if (event->type == INPUT_EV_ABS || event->type == INPUT_EV_REL) {
-            event->type = 0;
-            event->code = 0;
-            event->value = 0;
-        }
-    }
+        event->raw_event_1->code = 0;
+        event->raw_event_1->type = 0;
+        event->raw_event_1->value = 0;
 
+        event->raw_event_2->code = 0;
+        event->raw_event_2->type = 0;
+        event->raw_event_2->value = 0;
+    }
 
     return 0;
 }

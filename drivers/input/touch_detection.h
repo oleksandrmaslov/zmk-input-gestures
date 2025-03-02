@@ -12,8 +12,10 @@ struct touch_detection_data {
     bool touching;
     struct k_work_delayable touch_end_timeout_work;
     uint32_t last_touch_timestamp;
-    uint16_t previous_abs_x, previous_abs_y;
-    uint16_t previous_rel_x, previous_rel_y;
+    uint16_t x, y, previous_x, previous_y;
+    bool absolute;
+    bool complete;
+    struct input_event *previous_event;
     gesture_data *all;
 };
 

@@ -38,7 +38,7 @@ properties:
       The default value is a good compromise that works for me.
   inertial-cursor-decay-percent:
     type: int
-    default: 5
+    default: 20
     description: |
       A lower value will make the cursor move longer after the touch ends - kinda like changing the friction that
       slows down the cursor.

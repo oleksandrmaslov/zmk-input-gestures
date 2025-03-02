@@ -6,11 +6,22 @@
 
 #pragma once
 
+#include <drivers/input_processor.h>
+
+struct gesture_event_t {
+    uint32_t last_touch_timestamp;
+    uint16_t x, y, previous_x, previous_y;
+    int velocity_x, velocity_y;
+    bool absolute;
+    struct input_event *raw_event_1;
+    struct input_event *raw_event_2;
+};
+
 typedef struct gesture_data gesture_data;
 typedef struct gesture_config_t gesture_config;
 
 typedef int (handle_init_t)(const struct device *dev);
-typedef int (handle_touch_t)(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event);
+typedef int (handle_touch_t)(const struct device *dev, struct gesture_event_t *event);
 typedef int (handle_touch_end_t)(const struct device *dev);
 
 #include "touch_detection.h"

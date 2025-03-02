@@ -15,15 +15,15 @@
 
 LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
 
-static bool is_touch_on_perimeter(uint16_t x, uint16_t y, struct gesture_config *config, struct gesture_data *data) {
-    uint32_t squared_distance = (x - data->circular_scroll.half_width) * (x - data->circular_scroll.half_width) + 
-                            (y - data->circular_scroll.half_width) * (y - data->circular_scroll.half_width);
+static bool is_touch_on_perimeter(struct gesture_event_t *event, struct gesture_config *config, struct gesture_data *data) {
+    uint32_t squared_distance = (event->x - data->circular_scroll.half_width) * (event->x - data->circular_scroll.half_width) + 
+                            (event->y - data->circular_scroll.half_width) * (event->y - data->circular_scroll.half_width);
     return (squared_distance >= data->circular_scroll.inner_radius_squared && 
             squared_distance <= data->circular_scroll.outer_radius_squared);
 }
 
-static uint16_t calculate_angle(uint16_t x, uint16_t y, struct gesture_config *config, struct gesture_data *data) {
-    double angleRadians = atan2(x - data->circular_scroll.half_width, y - data->circular_scroll.half_height);
+static uint16_t calculate_angle(struct gesture_event_t *event, struct gesture_config *config, struct gesture_data *data) {
+    double angleRadians = atan2(event->x - data->circular_scroll.half_width, event->y - data->circular_scroll.half_height);
     double angleDegrees = angleRadians * (180.0 / PI);
     if (angleDegrees < 0) {
         angleDegrees += 360.0;
@@ -43,38 +43,41 @@ static double normalizeAngleDifference(uint16_t angle1, uint16_t angle2) {
     return difference;
 }
 
-int circular_scroll_handle_start(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
+int circular_scroll_handle_start(const struct device *dev, struct gesture_event_t *event) {
     struct gesture_data *data = (struct gesture_data *)dev->data;
     struct gesture_config *config = (struct gesture_config *)dev->config;
-    if (!config->circular_scroll.enabled || event->type != INPUT_EV_ABS) {
+    if (!config->circular_scroll.enabled || !event->absolute) {
         return -1;
     }
 
 
-
-    if (is_touch_on_perimeter(x, y, config, data)) {
+    if (is_touch_on_perimeter(event, config, data)) {
         data->circular_scroll.is_tracking = true;
-        data->circular_scroll.previous_angle = calculate_angle(x, y, config, data);
+        data->circular_scroll.previous_angle = calculate_angle(event, config, data);
         LOG_DBG("starting circular scrolling with angle %d!", data->circular_scroll.previous_angle);
     }
 
     return 0;
 }
 
-int circular_scroll_handle_touch(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
+int circular_scroll_handle_touch(const struct device *dev, struct gesture_event_t *event) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
-    if (!config->circular_scroll.enabled || !data->circular_scroll.is_tracking) {
+    if (!config->circular_scroll.enabled || 
+        !data->circular_scroll.is_tracking) {
         return -1;
     }
 
-    if (event->type == INPUT_EV_ABS) {
-        uint16_t current_angle = calculate_angle(x, y, config, data);
+    if (event->absolute) {
+        uint16_t current_angle = calculate_angle(event, config, data);
+        event->raw_event_1->code = 0;
+        event->raw_event_1->type = 0;
+        event->raw_event_1->value = 0;
 
-        event->code = INPUT_REL_WHEEL;
-        event->type = INPUT_EV_REL;
-        event->value = normalizeAngleDifference(current_angle, data->circular_scroll.previous_angle);
+        event->raw_event_2->code = INPUT_REL_WHEEL;
+        event->raw_event_2->type = INPUT_EV_REL;
+        event->raw_event_2->value = normalizeAngleDifference(current_angle, data->circular_scroll.previous_angle);
 
         data->circular_scroll.previous_angle = current_angle;
     }

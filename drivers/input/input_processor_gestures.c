@@ -27,19 +27,19 @@ static void handle_init(const struct device *dev) {
     inertial_cursor_init(dev);
 }
 
-static int handle_touch_start(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
+static int handle_touch_start(const struct device *dev, struct gesture_event_t *event) {
     LOG_DBG("handle_touch_start");
-    circular_scroll_handle_start(dev, x, y, event);
-    tap_detection_handle_start(dev, x, y, event);
-    inertial_cursor_handle_touch_start(dev, x, y, event);
+    circular_scroll_handle_start(dev, event);
+    tap_detection_handle_start(dev, event);
+    inertial_cursor_handle_touch_start(dev, event);
     return 0;
 }
 
-static int handle_touch(const struct device *dev, uint16_t x, uint16_t y, struct input_event *event) {
+static int handle_touch(const struct device *dev, struct gesture_event_t *event) {
     LOG_DBG("handle_touch_ongoing");
-    circular_scroll_handle_touch(dev, x, y, event);
-    tap_detection_handle_touch(dev, x, y, event);
-    inertial_cursor_handle_touch(dev, x, y, event);
+    circular_scroll_handle_touch(dev, event);
+    tap_detection_handle_touch(dev, event);
+    inertial_cursor_handle_touch(dev, event);
     return 0;
 }
 
