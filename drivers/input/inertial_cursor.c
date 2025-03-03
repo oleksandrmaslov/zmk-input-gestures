@@ -16,17 +16,17 @@ static void inertial_cursor_work_handler(struct k_work *work) {
     struct k_work_delayable *d_work = k_work_delayable_from_work(work);
     struct inertial_cursor_data *data = CONTAINER_OF(d_work, struct inertial_cursor_data, inertial_work);
 
-    LOG_DBG("data->velocity_x: %d, data->velocity_y: %d", 
-        (int) data->velocity_x, 
-        (int) data->velocity_y);
+    LOG_DBG("data->delta_x: %d, data->delta_y: %d", 
+        (int) data->delta_x, 
+        (int) data->delta_y);
 
-    data->velocity_x *= data->velocity_decay;
-    data->velocity_y *= data->velocity_decay;
+    data->delta_x *= data->velocity_decay;
+    data->delta_y *= data->velocity_decay;
 
-    if (abs((int) data->velocity_x) > 0 || abs((int) data->velocity_y) > 0) {
-        zmk_hid_mouse_movement_update((int) data->velocity_y, (int) -data->velocity_x);
+    if (abs((int) data->delta_x) > 0 || abs((int) data->delta_y) > 0) {
+        zmk_hid_mouse_movement_update((int) data->delta_y, (int) -data->delta_x);
         zmk_usb_hid_send_mouse_report();
-        k_work_reschedule(&data->inertial_work, K_MSEC(ANIMATE_MSEC));
+        k_work_reschedule(&data->inertial_work, K_MSEC(data->delta_time));
     }
 }
 
@@ -38,12 +38,16 @@ int inertial_cursor_handle_touch(const struct device *dev, struct gesture_event_
         return -1;
     }
 
-    if (event->velocity_x != 0) {
-        data->inertial_cursor.velocity_x = event->velocity_x * data->inertial_cursor.velocity_decay;
+    if (event->delta_x != 0) {
+        data->inertial_cursor.delta_x = event->delta_x;
     }
 
-    if (event->velocity_x != 0) {
-        data->inertial_cursor.velocity_y = event->velocity_y * data->inertial_cursor.velocity_decay;
+    if (event->delta_x != 0) {
+        data->inertial_cursor.delta_y = event->delta_y ;
+    }
+
+    if (event->delta_time != 0) {
+        data->inertial_cursor.delta_time = event->delta_time;
     }
 
     return 0;
@@ -60,8 +64,9 @@ int inertial_cursor_handle_touch_start(const struct device *dev, struct gesture_
 
     k_work_cancel_delayable(&data->inertial_cursor.inertial_work);
 
-    data->inertial_cursor.velocity_x = 0;
-    data->inertial_cursor.velocity_y = 0;
+    data->inertial_cursor.delta_x = 0;
+    data->inertial_cursor.delta_y = 0;
+    data->inertial_cursor.delta_time = 0;
 
     inertial_cursor_handle_touch(dev, event);
 
@@ -76,23 +81,28 @@ int inertial_cursor_handle_end(const struct device *dev) {
         return -1;
     }
 
-    double magnitude = sqrt(
-        data->inertial_cursor.velocity_x * data->inertial_cursor.velocity_x + 
-        data->inertial_cursor.velocity_y * data->inertial_cursor.velocity_y);
+    double velocity = sqrt(
+        data->inertial_cursor.delta_x * data->inertial_cursor.delta_x + 
+        data->inertial_cursor.delta_y * data->inertial_cursor.delta_y
+        ) / data->inertial_cursor.delta_time;
 
-    LOG_DBG("magnitude: %d, velocity_threshold: %d, too slow: %s", 
-        (int)magnitude, 
+
+    LOG_DBG("velocity: %d, velocity_threshold: %d, too slow: %s", 
+        (int)velocity, 
         (int) config->inertial_cursor.velocity_threshold, 
-        magnitude <= config->inertial_cursor.velocity_threshold?"yes":"no");
+        velocity <= config->inertial_cursor.velocity_threshold?"yes":"no");
 
-    if (magnitude <= config->inertial_cursor.velocity_threshold) {
+    if (velocity <= config->inertial_cursor.velocity_threshold) {
         return -1;
     }
+
+    data->inertial_cursor.delta_x *= data->inertial_cursor.velocity_decay;
+    data->inertial_cursor.delta_y *= data->inertial_cursor.velocity_decay;
     
     zmk_hid_mouse_movement_set(0, 0);
     zmk_usb_hid_send_mouse_report();
 
-    k_work_reschedule(&data->inertial_cursor.inertial_work, K_MSEC(ANIMATE_MSEC));
+    k_work_reschedule(&data->inertial_cursor.inertial_work, K_MSEC(data->inertial_cursor.delta_time));
 
     return 0;
 }

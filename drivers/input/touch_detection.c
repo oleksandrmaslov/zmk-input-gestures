@@ -40,24 +40,28 @@ int touch_detection_handle_event(const struct device *dev, struct input_event *e
         data->touch_detection.y = event->value;
     }
 
-    data->touch_detection.last_touch_timestamp = k_uptime_get();
-
     if (! data->touch_detection.complete) {
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
+    uint32_t now = k_uptime_get();
+
     struct gesture_event_t gesture_event = {
-        .last_touch_timestamp = data->touch_detection.last_touch_timestamp,
+        .last_touch_timestamp = now,
+        .previous_touch_timestamp = data->touch_detection.last_touch_timestamp,
         .x = data->touch_detection.x,
         .y = data->touch_detection.y,
         .previous_x = data->touch_detection.previous_x,
         .previous_y = data->touch_detection.previous_y,
-        .velocity_x = data->touch_detection.x - data->touch_detection.previous_x,
-        .velocity_y = data->touch_detection.y - data->touch_detection.previous_y,
+        .delta_x = data->touch_detection.x - data->touch_detection.previous_x,
+        .delta_y = data->touch_detection.y - data->touch_detection.previous_y,
+        .delta_time = now - data->touch_detection.last_touch_timestamp,
         .absolute = data->touch_detection.absolute,
         .raw_event_1 = data->touch_detection.previous_event,
         .raw_event_2 = event
     };
+
+    data->touch_detection.last_touch_timestamp = now;
 
     if (!data->touch_detection.touching){
         data->touch_detection.touching = true;

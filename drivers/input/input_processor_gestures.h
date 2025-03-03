@@ -9,9 +9,9 @@
 #include <drivers/input_processor.h>
 
 struct gesture_event_t {
-    uint32_t last_touch_timestamp;
+    uint32_t last_touch_timestamp, previous_touch_timestamp, delta_time;
     uint16_t x, y, previous_x, previous_y;
-    int velocity_x, velocity_y;
+    int delta_x, delta_y;
     bool absolute;
     struct input_event *raw_event_1;
     struct input_event *raw_event_2;
