@@ -1,9 +1,0 @@
-name: Build ZMK firmware
-on: [push, pull_request, workflow_dispatch]
-
-jobs:
-  build:
-    uses: ./.github/workflows/build-user-config.yml
-    with:
-      build_matrix_path: ./compile_tests/build.yaml
-      config_path: ./compile_tests/config
