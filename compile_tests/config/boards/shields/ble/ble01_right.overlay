@@ -1,0 +1,30 @@
+#include "ble01.dtsi"
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
+#include <behaviors/input_processor_gestures.dtsi>
+#include <behaviors/input_processor_absolute_to_relative.dtsi>
+
+
+&default_transform {
+    col-offset = <6>;
+};
+
+&kscan0 {
+    col-gpios
+        = <&gpio0 7 GPIO_ACTIVE_HIGH>
+        , <&gpio0 6  GPIO_ACTIVE_HIGH>
+        , <&gpio0 5  GPIO_ACTIVE_HIGH>
+        , <&gpio0 4  GPIO_ACTIVE_HIGH>
+        , <&gpio0 3  GPIO_ACTIVE_HIGH>
+        , <&gpio0 2  GPIO_ACTIVE_HIGH>
+        ;
+};
+
+// &glidepoint_listener {
+//     status = "okay";
+//     device = <&glidepoint>;
+// };
+
+
+
+

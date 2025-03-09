@@ -1,0 +1,56 @@
+#include <input/processors.dtsi>
+#include <dt-bindings/zmk/input_transform.h>
+#include <behaviors/input_processor_gestures.dtsi>
+#include <behaviors/input_processor_absolute_to_relative.dtsi>
+
+&i2c0 {
+    status = "okay";
+
+    glidepoint: glidepoint@2a {
+        compatible = "cirque,pinnacle";
+        reg = <0x2a>;
+        status = "disabled";
+        dr-gpios = <&gpio0 29 (GPIO_ACTIVE_HIGH)>;
+
+        sensitivity = "2x";
+        // sleep;
+        no-taps;
+        absolute-mode;
+
+        absolute-mode-clamp-min-x=<271>;
+        absolute-mode-clamp-max-x=<1713>;
+        absolute-mode-clamp-min-y=<199>;
+        absolute-mode-clamp-max-y=<1388>;
+    };
+
+};
+
+&zip_gestures {
+    tap-detection;
+    prevent_movement_during_tap;
+
+    circular-scroll;
+    circular-scroll-rim-percent=<15>;
+};
+
+/ {
+    glidepoint_listener: glidepoint_listener {
+        compatible = "zmk,input-listener";
+        status = "disabled";
+        device = <&glidepoint>;
+        input-processors = <
+            &zip_gestures
+            &zip_absolute_to_relative
+            &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_Y_INVERT)
+            &zip_temp_layer 3 100
+        >;
+        scroller {
+            layers = <5>;
+            input-processors = <
+                &zip_xy_transform (INPUT_TRANSFORM_XY_SWAP | INPUT_TRANSFORM_X_INVERT)
+                &zip_xy_scaler 1 20
+                &zip_xy_to_scroll_mapper
+            >;
+        };
+    };
+};

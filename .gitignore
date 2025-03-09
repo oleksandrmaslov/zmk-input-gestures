@@ -1,0 +1,8 @@
+.west
+build
+zephyr
+zmk
+modules
+cirque-input-module
+zmk-input-gestures
+zmk-input-processors

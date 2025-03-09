@@ -1,0 +1,49 @@
+manifest:
+  remotes:
+    - name: zmkfirmware
+      url-base: https://github.com/zmkfirmware
+    - name: halfdane
+      url-base: https://github.com/halfdane/
+    - name: johanson
+      url-base: https://github.com/petejohanson
+  projects:
+    - name: zmk
+      remote: johanson
+      revision: split/wired-split-first-pass
+      import: app/west.yml
+    - name: cirque-input-module
+      remote: halfdane
+      revision: absolute_mode
+    - name: zmk-input-processors
+      remote: halfdane
+      revision: main
+    - name: zmk-input-gestures
+      remote: halfdane
+      revision: main
+    - name: zephyr
+      remote: johanson
+      revision: v3.5.0+zmk-fixes+rp2040-uart-fifo
+      clone-depth: 1
+      import:
+        name-blocklist:
+          - ci-tools
+          - hal_altera
+          - hal_cypress
+          - hal_infineon
+          - hal_microchip
+          - hal_nxp
+          - hal_openisa
+          - hal_silabs
+          - hal_xtensa
+          - hal_st
+          - hal_ti
+          - loramac-node
+          - mcuboot
+          - mcumgr
+          - net-tools
+          - openthread
+          - edtt
+          - trusted-firmware-m
+  self: 
+    path: config
+

@@ -1,0 +1,27 @@
+---
+include:
+  - board: waveshare_rp2040_zero
+    shield: usbonly01_left
+    snippet: zmk-usb-logging studio-rpc-usb-uart 
+  - board: waveshare_rp2040_zero
+    shield: usbonly01_right
+    snippet: zmk-usb-logging studio-rpc-usb-uart 
+  - board: waveshare_rp2040_zero
+    shield: usbonly02_left
+    snippet: zmk-usb-logging studio-rpc-usb-uart 
+  - board: waveshare_rp2040_zero
+    shield: usbonly02_right
+    snippet: zmk-usb-logging studio-rpc-usb-uart 
+
+  - board: nice_nano_v2
+    shield: ble01_left
+    snippet: zmk-usb-logging studio-rpc-usb-uart 
+  - board: nice_nano_v2
+    shield: ble01_right
+    snippet: zmk-usb-logging studio-rpc-usb-uart 
+  - board: nice_nano_v2
+    shield: ble02_left
+    snippet: zmk-usb-logging studio-rpc-usb-uart 
+  - board: nice_nano_v2
+    shield: ble02_right
+    snippet: zmk-usb-logging studio-rpc-usb-uart 

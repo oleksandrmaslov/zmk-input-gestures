@@ -1,0 +1,14 @@
+config SHIELD_USBONLY01_LEFT
+    def_bool $(shields_list_contains,usbonly01_left)
+
+# No whitespace after the comma or in your part name!
+config SHIELD_USBONLY01_RIGHT
+    def_bool $(shields_list_contains,usbonly01_right)
+
+config SHIELD_USBONLY02_LEFT
+    def_bool $(shields_list_contains,usbonly02_left)
+
+# No whitespace after the comma or in your part name!
+config SHIELD_USBONLY02_RIGHT
+    def_bool $(shields_list_contains,usbonly02_right)
+

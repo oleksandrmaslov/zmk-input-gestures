@@ -1,0 +1,38 @@
+if SHIELD_USBONLY01_RIGHT || SHIELD_USBONLY02_LEFT
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_USBONLY01_LEFT || SHIELD_USBONLY01_RIGHT
+config ZMK_SPLIT
+    default y
+
+config ZMK_KEYBOARD_NAME
+    default "UsbOnly01"
+
+config ZMK_POINTING
+    default y
+
+
+config I2C
+    default y
+
+endif
+
+if SHIELD_USBONLY02_LEFT || SHIELD_USBONLY02_RIGHT
+config ZMK_SPLIT
+    default y
+
+config ZMK_KEYBOARD_NAME
+    default "UsbOnly02"
+
+config ZMK_POINTING
+    default y
+
+
+config I2C
+    default y
+
+endif

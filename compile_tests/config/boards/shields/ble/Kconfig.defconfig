@@ -1,0 +1,43 @@
+if SHIELD_BLE01_RIGHT || SHIELD_BLE02_LEFT
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+endif
+
+if SHIELD_BLE01_LEFT || SHIELD_BLE01_RIGHT
+config ZMK_SPLIT
+    default y
+
+config ZMK_KEYBOARD_NAME
+    default "ble01"
+
+config ZMK_POINTING
+    default y
+
+
+config I2C
+    default n
+
+config SPI
+    default y
+
+endif
+
+if SHIELD_BLE02_LEFT || SHIELD_BLE02_RIGHT
+config ZMK_SPLIT
+    default y
+
+config ZMK_KEYBOARD_NAME
+    default "ble02"
+
+config ZMK_POINTING
+    default y
+
+config I2C
+    default n
+
+config SPI
+    default y
+
+endif
