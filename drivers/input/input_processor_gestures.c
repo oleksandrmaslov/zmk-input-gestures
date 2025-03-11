@@ -10,11 +10,12 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/kernel.h>
 #include <zephyr/pm/device.h>
-/* Если в будущем потребуется поддержка pinctrl, подключите:
+/* Если понадобится поддержка pinctrl, можно подключить:
 #include <zephyr/drivers/pinctrl.h>
 */
 
 #include "input_processor_gestures.h"
+
 #include "touch_detection.h"
 #include "tap_detection.h"
 #include "circular_scroll.h"
@@ -24,59 +25,56 @@ LOG_MODULE_REGISTER(gestures, CONFIG_ZMK_LOG_LEVEL);
 
 /* --- Энергосберегающие функции для Cirque GlidePoint TM-040040 --- */
 
-/* Функция перевода трекпада в режим энергосбережения.
- * Согласно документации TM-040040 необходимо отключить движок жестов
- * и перевести регистры устройства в режим низкого энергопотребления.
- * Дополнительные аппаратно-специфичные операции (например, запись в регистры)
- * нужно реализовать здесь.
+/* Функция перевода устройства в режим энергосбережения.
+ * Согласно документации TM-040040, необходимо отключить движок распознавания жестов
+ * и перевести регистры в режим низкого энергопотребления.
+ * Замените комментарии ниже на реальные аппаратно-специфичные операции.
  */
 static int glidepoint_tm_040040_enter_low_power(const struct device *dev)
 {
     LOG_DBG("Cirque GlidePoint TM-040040: entering low-power mode");
 
-    /* Если в будущем у вас появится расширенная конфигурация с поддержкой pinctrl,
-     * можно добавить вызов pinctrl_apply_state() здесь.
+    /* Если потребуется поддержка pinctrl, можно вызвать:
      *
-     * Например:
-     *   int ret = pinctrl_apply_state(my_config->pcfg, PINCTRL_STATE_SLEEP);
-     *   if (ret < 0) {
-     *       LOG_ERR("Failed to apply sleep pinctrl state");
-     *       return ret;
-     *   }
+     * int ret = pinctrl_apply_state(my_config->pcfg, PINCTRL_STATE_SLEEP);
+     * if (ret < 0) {
+     *     LOG_ERR("Failed to apply sleep pinctrl state");
+     *     return ret;
+     * }
      */
 
     /* Пример аппаратно-специфичной операции:
      * REG_WRITE(TM_040040_CTRL_REG, TM_040040_LOW_POWER_MODE);
      */
+
     return 0;
 }
 
-/* Функция восстановления работы трекпада из режима энергосбережения.
- * Согласно документации TM-040040 необходимо восстановить нормальное состояние,
- * повторно инициализировать движок жестов и перевести регистры в рабочий режим.
+/* Функция восстановления устройства из режима энергосбережения.
+ * При пробуждении необходимо вернуть устройство в нормальный рабочий режим.
  */
 static int glidepoint_tm_040040_exit_low_power(const struct device *dev)
 {
     LOG_DBG("Cirque GlidePoint TM-040040: exiting low-power mode");
 
-    /* Если потребуется поддержка pinctrl, можно восстановить состояние пинов:
+    /* Если требуется, восстановите конфигурацию пинов:
      *
-     *   int ret = pinctrl_apply_state(my_config->pcfg, PINCTRL_STATE_DEFAULT);
-     *   if (ret < 0) {
-     *       LOG_ERR("Failed to apply default pinctrl state");
-     *       return ret;
-     *   }
+     * int ret = pinctrl_apply_state(my_config->pcfg, PINCTRL_STATE_DEFAULT);
+     * if (ret < 0) {
+     *     LOG_ERR("Failed to apply default pinctrl state");
+     *     return ret;
+     * }
      */
 
     /* Пример аппаратно-специфичной операции:
      * REG_WRITE(TM_040040_CTRL_REG, TM_040040_NORMAL_MODE);
      */
+
     return 0;
 }
 
 /* Основная функция PM callback для трекпада.
- * При получении команды SUSPEND или TURN_OFF переводит устройство в режим энергосбережения,
- * а при RESUME или TURN_ON – восстанавливает его.
+ * Обрабатывает действия suspend/resume (а также TURN_OFF/TURN_ON, если они не реализованы отдельно).
  */
 static int gestures_pm_action(const struct device *dev, enum pm_device_action action)
 {
@@ -149,7 +147,7 @@ static int gestures_init(const struct device *dev) {
     return 0;
 }
 
-// Используем обработчик событий из touch_detection.c в качестве API
+// Используем обработчик событий из touch_detection.c как API
 static const struct zmk_input_processor_driver_api gestures_driver_api = {
     .handle_event = touch_detection_handle_event,
 };
@@ -186,8 +184,8 @@ static const struct zmk_input_processor_driver_api gestures_driver_api = {
         .circular_scroll = circular_scroll_config_##n,                                                      \
         .inertial_cursor = inertial_cursor_config_##n,                                                      \
     };                                                                                                      \
-    PM_DEVICE_DT_INST_DEFINE(n, gestures_pm_action);                                                        \
-    DEVICE_DT_INST_DEFINE(n, gestures_init, PM_DEVICE_DT_INST_REF(n), &gesture_data_##n,                    \
+    /* Здесь возвращаемся к использованию PM_DEVICE_DT_INST_GET */                                          \
+    DEVICE_DT_INST_DEFINE(n, gestures_init, PM_DEVICE_DT_INST_GET(n), &gesture_data_##n,                    \
                           &gesture_config_##n, POST_KERNEL, CONFIG_INPUT_GESTURES_INIT_PRIORITY,            \
                           &gestures_driver_api);
 
