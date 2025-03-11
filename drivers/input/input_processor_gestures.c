@@ -9,7 +9,8 @@
 #include <drivers/input_processor.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/kernel.h>
-
+#include <zephyr/device.h>
+#include <zephyr/pm/device.h>
 #include "input_processor_gestures.h"
 
 #include "touch_detection.h"
