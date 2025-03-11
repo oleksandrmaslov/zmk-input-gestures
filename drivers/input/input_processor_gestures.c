@@ -20,9 +20,6 @@
 
 LOG_MODULE_REGISTER(gestures, CONFIG_ZMK_LOG_LEVEL);
 
-/* --- Энергосберегающие функции для Cirque GlidePoint TM-040040 --- */
-
-/* Функция перевода устройства в режим низкого энергопотребления */
 static int glidepoint_tm_040040_enter_low_power(const struct device *dev)
 {
     LOG_DBG("Cirque GlidePoint TM-040040: entering low-power mode");
@@ -35,39 +32,20 @@ static int glidepoint_tm_040040_enter_low_power(const struct device *dev)
             return ret;
         }
     }
-    
-    /* Здесь можно добавить аппаратно-специфичные операции:
-     * например, запись в управляющий регистр для перехода в режим энергосбережения:
-     * REG_WRITE(TM_040040_CTRL_REG, TM_040040_LOW_POWER_MODE);
-     */
     return 0;
 }
-
-/* Функция восстановления устройства из режима энергосбережения */
 static int glidepoint_tm_040040_exit_low_power(const struct device *dev)
 {
     LOG_DBG("Cirque GlidePoint TM-040040: exiting low-power mode");
-    
-    /* Применяем pinctrl-состояние для нормальной работы, если оно задано */
-    if (dev->config && dev->config->pcfg) {
+        if (dev->config && dev->config->pcfg) {
         int ret = pinctrl_apply_state(dev->config->pcfg, PINCTRL_STATE_DEFAULT);
         if (ret < 0) {
             LOG_ERR("Failed to apply default pinctrl state");
             return ret;
         }
     }
-    
-    /* Здесь можно добавить аппаратно-специфичные операции для восстановления:
-     * например, запись в управляющий регистр для выхода из режима энергосбережения:
-     * REG_WRITE(TM_040040_CTRL_REG, TM_040040_NORMAL_MODE);
-     */
     return 0;
 }
-
-/* Функция управления питанием для трекпада.
- * При suspend/turn off переводит устройство в low-power режим,
- * при resume/turn on – восстанавливает нормальную работу.
- */
 static int gestures_pm_action(const struct device *dev, enum pm_device_action action)
 {
     int ret = 0;
@@ -93,8 +71,6 @@ static int gestures_pm_action(const struct device *dev, enum pm_device_action ac
     }
     return ret;
 }
-
-/* --- Основной функционал трекпада --- */
 
 static void handle_init(const struct device *dev) {
     touch_detection_init(dev);
