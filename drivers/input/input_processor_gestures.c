@@ -33,21 +33,6 @@ LOG_MODULE_REGISTER(gestures, CONFIG_ZMK_LOG_LEVEL);
 static int glidepoint_tm_040040_enter_low_power(const struct device *dev)
 {
     LOG_DBG("Cirque GlidePoint TM-040040: entering low-power mode");
-
-    /* Если в будущем у вас появится расширенная конфигурация с поддержкой pinctrl,
-     * можно добавить вызов pinctrl_apply_state() здесь.
-     *
-     * Например:
-     *   int ret = pinctrl_apply_state(my_config->pcfg, PINCTRL_STATE_SLEEP);
-     *   if (ret < 0) {
-     *       LOG_ERR("Failed to apply sleep pinctrl state");
-     *       return ret;
-     *   }
-     */
-
-    /* Пример аппаратно-специфичной операции:
-     * REG_WRITE(TM_040040_CTRL_REG, TM_040040_LOW_POWER_MODE);
-     */
     return 0;
 }
 
