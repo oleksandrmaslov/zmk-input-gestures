@@ -10,7 +10,9 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/kernel.h>
 #include <zephyr/pm/device.h>
+/* Если в будущем потребуется поддержка pinctrl, подключите:
 #include <zephyr/drivers/pinctrl.h>
+*/
 
 #include "input_processor_gestures.h"
 #include "touch_detection.h"
@@ -20,32 +22,62 @@
 
 LOG_MODULE_REGISTER(gestures, CONFIG_ZMK_LOG_LEVEL);
 
+/* --- Энергосберегающие функции для Cirque GlidePoint TM-040040 --- */
+
+/* Функция перевода трекпада в режим энергосбережения.
+ * Согласно документации TM-040040 необходимо отключить движок жестов
+ * и перевести регистры устройства в режим низкого энергопотребления.
+ * Дополнительные аппаратно-специфичные операции (например, запись в регистры)
+ * нужно реализовать здесь.
+ */
 static int glidepoint_tm_040040_enter_low_power(const struct device *dev)
 {
     LOG_DBG("Cirque GlidePoint TM-040040: entering low-power mode");
-    
-    /* Применяем pinctrl-состояние для сна, если оно задано */
-    if (dev->config && dev->config->pcfg) {
-        int ret = pinctrl_apply_state(dev->config->pcfg, PINCTRL_STATE_SLEEP);
-        if (ret < 0) {
-            LOG_ERR("Failed to apply sleep pinctrl state");
-            return ret;
-        }
-    }
+
+    /* Если в будущем у вас появится расширенная конфигурация с поддержкой pinctrl,
+     * можно добавить вызов pinctrl_apply_state() здесь.
+     *
+     * Например:
+     *   int ret = pinctrl_apply_state(my_config->pcfg, PINCTRL_STATE_SLEEP);
+     *   if (ret < 0) {
+     *       LOG_ERR("Failed to apply sleep pinctrl state");
+     *       return ret;
+     *   }
+     */
+
+    /* Пример аппаратно-специфичной операции:
+     * REG_WRITE(TM_040040_CTRL_REG, TM_040040_LOW_POWER_MODE);
+     */
     return 0;
 }
+
+/* Функция восстановления работы трекпада из режима энергосбережения.
+ * Согласно документации TM-040040 необходимо восстановить нормальное состояние,
+ * повторно инициализировать движок жестов и перевести регистры в рабочий режим.
+ */
 static int glidepoint_tm_040040_exit_low_power(const struct device *dev)
 {
     LOG_DBG("Cirque GlidePoint TM-040040: exiting low-power mode");
-        if (dev->config && dev->config->pcfg) {
-        int ret = pinctrl_apply_state(dev->config->pcfg, PINCTRL_STATE_DEFAULT);
-        if (ret < 0) {
-            LOG_ERR("Failed to apply default pinctrl state");
-            return ret;
-        }
-    }
+
+    /* Если потребуется поддержка pinctrl, можно восстановить состояние пинов:
+     *
+     *   int ret = pinctrl_apply_state(my_config->pcfg, PINCTRL_STATE_DEFAULT);
+     *   if (ret < 0) {
+     *       LOG_ERR("Failed to apply default pinctrl state");
+     *       return ret;
+     *   }
+     */
+
+    /* Пример аппаратно-специфичной операции:
+     * REG_WRITE(TM_040040_CTRL_REG, TM_040040_NORMAL_MODE);
+     */
     return 0;
 }
+
+/* Основная функция PM callback для трекпада.
+ * При получении команды SUSPEND или TURN_OFF переводит устройство в режим энергосбережения,
+ * а при RESUME или TURN_ON – восстанавливает его.
+ */
 static int gestures_pm_action(const struct device *dev, enum pm_device_action action)
 {
     int ret = 0;
@@ -71,6 +103,8 @@ static int gestures_pm_action(const struct device *dev, enum pm_device_action ac
     }
     return ret;
 }
+
+/* --- Основной функционал обработки жестов --- */
 
 static void handle_init(const struct device *dev) {
     touch_detection_init(dev);
@@ -115,12 +149,12 @@ static int gestures_init(const struct device *dev) {
     return 0;
 }
 
-// use touch_detection.c#touch_detection_handle_event as api
+// Используем обработчик событий из touch_detection.c в качестве API
 static const struct zmk_input_processor_driver_api gestures_driver_api = {
     .handle_event = touch_detection_handle_event,
 };
 
-/* --- Определение устройств для трекпада с поддержкой PM --- */
+/* --- Определение устройства через devicetree с поддержкой PM --- */
 #define GESTURES_INST(n)                                                                                    \
     static struct gesture_data gesture_data_##n = {                                                         \
     };                                                                                                      \
