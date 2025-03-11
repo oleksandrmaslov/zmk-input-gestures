@@ -9,16 +9,92 @@
 #include <drivers/input_processor.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/kernel.h>
-#include <zephyr/device.h>
-#include "input_processor_gestures.h"
 #include <zephyr/pm/device.h>
+#include <zephyr/drivers/pinctrl.h>
+
+#include "input_processor_gestures.h"
 #include "touch_detection.h"
 #include "tap_detection.h"
 #include "circular_scroll.h"
 #include "inertial_cursor.h"
 
-
 LOG_MODULE_REGISTER(gestures, CONFIG_ZMK_LOG_LEVEL);
+
+/* --- Энергосберегающие функции для Cirque GlidePoint TM-040040 --- */
+
+/* Функция перевода устройства в режим низкого энергопотребления */
+static int glidepoint_tm_040040_enter_low_power(const struct device *dev)
+{
+    LOG_DBG("Cirque GlidePoint TM-040040: entering low-power mode");
+    
+    /* Применяем pinctrl-состояние для сна, если оно задано */
+    if (dev->config && dev->config->pcfg) {
+        int ret = pinctrl_apply_state(dev->config->pcfg, PINCTRL_STATE_SLEEP);
+        if (ret < 0) {
+            LOG_ERR("Failed to apply sleep pinctrl state");
+            return ret;
+        }
+    }
+    
+    /* Здесь можно добавить аппаратно-специфичные операции:
+     * например, запись в управляющий регистр для перехода в режим энергосбережения:
+     * REG_WRITE(TM_040040_CTRL_REG, TM_040040_LOW_POWER_MODE);
+     */
+    return 0;
+}
+
+/* Функция восстановления устройства из режима энергосбережения */
+static int glidepoint_tm_040040_exit_low_power(const struct device *dev)
+{
+    LOG_DBG("Cirque GlidePoint TM-040040: exiting low-power mode");
+    
+    /* Применяем pinctrl-состояние для нормальной работы, если оно задано */
+    if (dev->config && dev->config->pcfg) {
+        int ret = pinctrl_apply_state(dev->config->pcfg, PINCTRL_STATE_DEFAULT);
+        if (ret < 0) {
+            LOG_ERR("Failed to apply default pinctrl state");
+            return ret;
+        }
+    }
+    
+    /* Здесь можно добавить аппаратно-специфичные операции для восстановления:
+     * например, запись в управляющий регистр для выхода из режима энергосбережения:
+     * REG_WRITE(TM_040040_CTRL_REG, TM_040040_NORMAL_MODE);
+     */
+    return 0;
+}
+
+/* Функция управления питанием для трекпада.
+ * При suspend/turn off переводит устройство в low-power режим,
+ * при resume/turn on – восстанавливает нормальную работу.
+ */
+static int gestures_pm_action(const struct device *dev, enum pm_device_action action)
+{
+    int ret = 0;
+
+    switch (action) {
+    case PM_DEVICE_ACTION_SUSPEND:
+        ret = glidepoint_tm_040040_enter_low_power(dev);
+        break;
+    case PM_DEVICE_ACTION_RESUME:
+        ret = glidepoint_tm_040040_exit_low_power(dev);
+        break;
+    case PM_DEVICE_ACTION_TURN_OFF:
+        LOG_DBG("TURN_OFF action not fully supported, using suspend");
+        ret = glidepoint_tm_040040_enter_low_power(dev);
+        break;
+    case PM_DEVICE_ACTION_TURN_ON:
+        LOG_DBG("TURN_ON action not fully supported, using resume");
+        ret = glidepoint_tm_040040_exit_low_power(dev);
+        break;
+    default:
+        ret = -ENOTSUP;
+        break;
+    }
+    return ret;
+}
+
+/* --- Основной функционал трекпада --- */
 
 static void handle_init(const struct device *dev) {
     touch_detection_init(dev);
@@ -68,6 +144,7 @@ static const struct zmk_input_processor_driver_api gestures_driver_api = {
     .handle_event = touch_detection_handle_event,
 };
 
+/* --- Определение устройств для трекпада с поддержкой PM --- */
 #define GESTURES_INST(n)                                                                                    \
     static struct gesture_data gesture_data_##n = {                                                         \
     };                                                                                                      \
@@ -99,7 +176,8 @@ static const struct zmk_input_processor_driver_api gestures_driver_api = {
         .circular_scroll = circular_scroll_config_##n,                                                      \
         .inertial_cursor = inertial_cursor_config_##n,                                                      \
     };                                                                                                      \
-    DEVICE_DT_INST_DEFINE(n, gestures_init, PM_DEVICE_DT_INST_GET(n), &gesture_data_##n,                    \
+    PM_DEVICE_DT_INST_DEFINE(n, gestures_pm_action);                                                        \
+    DEVICE_DT_INST_DEFINE(n, gestures_init, PM_DEVICE_DT_INST_REF(n), &gesture_data_##n,                    \
                           &gesture_config_##n, POST_KERNEL, CONFIG_INPUT_GESTURES_INIT_PRIORITY,            \
                           &gestures_driver_api);
 
