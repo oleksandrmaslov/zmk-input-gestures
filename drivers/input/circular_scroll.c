@@ -7,6 +7,8 @@
 #include <drivers/input_processor.h>
 #include <zephyr/logging/log.h>
 #include <math.h>
+#include <zephyr/device.h>
+#include <zephyr/pm/device.h>
 
 #include "input_processor_gestures.h"
 #include "circular_scroll.h"
