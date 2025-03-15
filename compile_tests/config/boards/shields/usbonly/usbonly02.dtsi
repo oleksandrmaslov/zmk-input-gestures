@@ -1,6 +1,5 @@
 #include <dt-bindings/zmk/matrix_transform.h>
 #include "usbonly-layouts.dtsi"
-#include "cirque_peripheral.dtsi"
 
 &usbonly_layout {
     transform = <&default_transform>;

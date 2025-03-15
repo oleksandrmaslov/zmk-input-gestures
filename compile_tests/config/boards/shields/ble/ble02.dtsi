@@ -1,6 +1,5 @@
 #include <dt-bindings/zmk/matrix_transform.h>
 #include "ble-layouts.dtsi"
-#include "cirque_peripheral.dtsi"
 
 &ble_layout {
     transform = <&default_transform>;
@@ -14,11 +13,6 @@
     chosen { 
         zmk,kscan = &kscan0;
         zmk,physical-layout = &ble_layout;
-    };
-
-    split_config {
-        compatible = "zmk,wired-split";
-        device = <&uart0>;
     };
     
     default_transform: keymap_transform_0 {
@@ -50,4 +44,22 @@ RC(2,0) RC(2,1) RC(2,2) RC(2,3) RC(2,4)  RC(2,7) RC(2,8) RC(2,9) RC(2,10) RC(2,1
 
     }; 
 
+};
+
+/ {
+    split_inputs {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        glidepoint_split: glidepoint_split@0 {
+            compatible = "zmk,input-split";
+            reg = <0>;
+        };
+    };
+
+    glidepoint_listener: glidepoint_listener {
+        compatible = "zmk,input-listener";
+        status = "disabled";
+        device = <&glidepoint_split>;
+    };
 };
