@@ -7,7 +7,7 @@
 #include <drivers/input_processor.h>
 #include <zephyr/logging/log.h>
 #include <zmk/hid.h>
-#include <zmk/usb_hid.h>
+#include <zmk/endpoints.h>
 #include "input_processor_gestures.h"
 
 LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
@@ -66,9 +66,9 @@ static void tap_timeout_callback(struct k_work *work) {
     if (!data->all->touch_detection.touching) {
         LOG_DBG("tap detected - sending button presses");
         zmk_hid_mouse_button_press(0);
-        zmk_usb_hid_send_mouse_report();
+        zmk_endpoints_send_mouse_report();
         zmk_hid_mouse_button_release(0);
-        zmk_usb_hid_send_mouse_report();
+        zmk_endpoints_send_mouse_report();
     } else {
         LOG_DBG("time expired but touch is ongoing - it's not a tap");
     }
