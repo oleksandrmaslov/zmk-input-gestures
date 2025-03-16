@@ -5,6 +5,7 @@ if (CONFIG_DT_HAS_ZMK_INPUT_PROCESSOR_GESTURES_ENABLED AND NOT CONFIG_ZMK_POINTI
     message( FATAL_ERROR "You don't have ZMK_POINTING configured, but zmk_input_gestures depends on it." )    
 endif()
 
+
 if (CONFIG_ZMK_INPUT_PROCESSOR_GESTURES)
     zephyr_library()
 

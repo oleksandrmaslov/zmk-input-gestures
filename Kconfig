@@ -1,1 +1,1 @@
-rsource "drivers/Kconfig"
+rsource "src/Kconfig"
