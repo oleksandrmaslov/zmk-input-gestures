@@ -68,6 +68,19 @@ static const struct zmk_input_processor_driver_api gestures_driver_api = {
     .handle_event = touch_detection_handle_event,
 };
 
+#if IS_ENABLED(CONFIG_PM_DEVICE)
+
+static int pinnacle_pm_action(const struct device *dev, enum pm_device_action action) {
+    switch (action) {
+    case PM_DEVICE_ACTION_SUSPEND:
+        return set_int(dev, false);
+    case PM_DEVICE_ACTION_RESUME:
+        return set_int(dev, true);
+    default:
+        return -ENOTSUP;
+    }
+}
+
 #define GESTURES_INST(n)                                                                                    \
     static struct gesture_data gesture_data_##n = {                                                         \
     };                                                                                                      \
@@ -99,6 +112,7 @@ static const struct zmk_input_processor_driver_api gestures_driver_api = {
         .circular_scroll = circular_scroll_config_##n,                                                      \
         .inertial_cursor = inertial_cursor_config_##n,                                                      \
     };                                                                                                      \
+    PM_DEVICE_DT_INST_DEFINE(n, pinnacle_pm_action);                                                        \
     DEVICE_DT_INST_DEFINE(n, gestures_init, PM_DEVICE_DT_INST_GET(n), &gesture_data_##n,                    \
                           &gesture_config_##n, POST_KERNEL, CONFIG_INPUT_GESTURES_INIT_PRIORITY,            \
                           &gestures_driver_api);
