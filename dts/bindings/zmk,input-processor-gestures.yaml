@@ -49,6 +49,11 @@ properties:
     description: |
       If a touch begins on the outer circular-scroll-rim-percent percentage of the touchpad, angular
       movement of the touch is interpreted as scrolling down (clockwise) or up (counter-clockwise).
+  scroll-sensitivity:
+    type: int
+    default: 100
+    description: |
+      Scroll sensitivity multiplier. The actual multiplier is the given value divided by 100.
   circular-scroll-rim-percent:
     type: int
     default: 10
