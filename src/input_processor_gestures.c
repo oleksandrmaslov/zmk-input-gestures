@@ -9,7 +9,7 @@
 #include <drivers/input_processor.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/kernel.h>
-
+#include <zephyr/pm/device.h>
 #include "input_processor_gestures.h"
 
 #include "touch_detection.h"
@@ -99,6 +99,7 @@ static const struct zmk_input_processor_driver_api gestures_driver_api = {
         .circular_scroll = circular_scroll_config_##n,                                                      \
         .inertial_cursor = inertial_cursor_config_##n,                                                      \
     };                                                                                                      \
+    PM_DEVICE_DT_INST_DEFINE(n, pinnacle_pm_action);                                                        \
     DEVICE_DT_INST_DEFINE(n, gestures_init, PM_DEVICE_DT_INST_GET(n), &gesture_data_##n,                    \
                           &gesture_config_##n, POST_KERNEL, CONFIG_INPUT_GESTURES_INIT_PRIORITY,            \
                           &gestures_driver_api);
