@@ -85,7 +85,6 @@ static const struct zmk_input_processor_driver_api gestures_driver_api = {
         .circular_scroll_rim_percent = DT_INST_PROP(n, circular_scroll_rim_percent),                        \
         .width = DT_INST_PROP(n, circular_scroll_width),                                                    \
         .height = DT_INST_PROP(n, circular_scroll_height),                                                  \
-        .scroll_sensitivity = DT_INST_PROP_OR(n, circular_scroll_sensitivity), // Добавленная настройка     \
     };                                                                                                      \
     static const struct inertial_cursor_config inertial_cursor_config_##n = {                               \
         .enabled = DT_INST_PROP(n, inertial_cursor),                                                        \
