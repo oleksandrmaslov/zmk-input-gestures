@@ -21,7 +21,7 @@ struct circular_scroll_config {
     const bool enabled;
     const uint16_t width, height;
     const uint8_t circular_scroll_rim_percent;
-    float scroll_sensitivity;
+    const float scroll_sensitivity;
 };
 
 handle_init_t circular_scroll_init;
