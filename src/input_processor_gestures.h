@@ -51,5 +51,4 @@ struct gesture_config {
     struct tap_detection_config tap_detection;
     struct circular_scroll_config circular_scroll;
     struct inertial_cursor_config inertial_cursor;
-    struct scroll_sensitivity_config scroll_sensitivity;
 };
