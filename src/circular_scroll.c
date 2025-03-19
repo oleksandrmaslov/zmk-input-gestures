@@ -1,9 +1,3 @@
-/*
- * Copyright (c) 2025 The ZMK Contributors
- *
- * SPDX-License-Identifier: MIT
- */
-
 #include <drivers/input_processor.h>
 #include <zephyr/logging/log.h>
 #include <math.h>
@@ -11,35 +5,34 @@
 #include "input_processor_gestures.h"
 #include "circular_scroll.h"
 
-#define PI 3.14159265358979323846
+#define PI 3.14159265358979323846f
 
 LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
 
 static bool is_touch_on_perimeter(struct gesture_event_t *event, struct gesture_config *config, struct gesture_data *data) {
     uint32_t squared_distance = (event->x - data->circular_scroll.half_width) * (event->x - data->circular_scroll.half_width) + 
-                            (event->y - data->circular_scroll.half_width) * (event->y - data->circular_scroll.half_width);
+                                (event->y - data->circular_scroll.half_width) * (event->y - data->circular_scroll.half_width);
     return (squared_distance >= data->circular_scroll.inner_radius_squared && 
             squared_distance <= data->circular_scroll.outer_radius_squared);
 }
 
 static uint16_t calculate_angle(struct gesture_event_t *event, struct gesture_config *config, struct gesture_data *data) {
-    double angleRadians = atan2(event->x - data->circular_scroll.half_width, event->y - data->circular_scroll.half_height);
-    double angleDegrees = angleRadians * (180.0 / PI);
+    float angleRadians = atan2f(event->x - data->circular_scroll.half_width, event->y - data->circular_scroll.half_height);
+    float angleDegrees = angleRadians * (180.0f / PI);
     if (angleDegrees < 0) {
-        angleDegrees += 360.0;
+        angleDegrees += 360.0f;
     }
-    return angleDegrees;
+    return (uint16_t)angleDegrees;
 }
 
-static double normalizeAngleDifference(uint16_t angle1, uint16_t angle2) {
-    double difference = angle2 - angle1;
-    while (difference > 180.0) {
-        difference -= 360.0;
+static float normalizeAngleDifference(uint16_t angle1, uint16_t angle2) {
+    float difference = (float)angle2 - (float)angle1;
+    while (difference > 180.0f) {
+        difference -= 360.0f;
     }
-    while (difference < -180.0) {
-        difference += 360.0;
+    while (difference < -180.0f) {
+        difference += 360.0f;
     }
-
     return difference;
 }
 
@@ -49,7 +42,6 @@ int circular_scroll_handle_start(const struct device *dev, struct gesture_event_
     if (!config->circular_scroll.enabled || !event->absolute) {
         return -1;
     }
-
 
     if (is_touch_on_perimeter(event, config, data)) {
         data->circular_scroll.is_tracking = true;
@@ -108,7 +100,7 @@ int circular_scroll_init(const struct device *dev) {
         return -1;
     }
 
-    // precalculate stuff so the touch events are less expensive
+    // Предварительный расчёт для оптимизации обработки событий касания
     data->circular_scroll.half_width = config->circular_scroll.width / 2;
     data->circular_scroll.half_height = config->circular_scroll.height / 2;
 
