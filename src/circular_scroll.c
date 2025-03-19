@@ -72,7 +72,9 @@ int circular_scroll_handle_touch(const struct device *dev, struct gesture_event_
         event->raw_event_1->code = 0;
         event->raw_event_1->type = 0;
         event->raw_event_1->value = 0;
-
+        
+        float angle_diff = normalizeAngleDifference(current_angle, data->circular_scroll.previous_angle)
+                        * config->circular_scroll.scroll_sensitivity;
         event->raw_event_2->code = INPUT_REL_WHEEL;
         event->raw_event_2->type = INPUT_EV_REL;
         event->raw_event_2->value = normalizeAngleDifference(current_angle, data->circular_scroll.previous_angle);
