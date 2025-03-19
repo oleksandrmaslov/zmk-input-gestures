@@ -44,17 +44,17 @@ static uint16_t calculate_angle(struct gesture_event_t *event,
 }
 
 
-static double normalizeAngleDifference(uint16_t angle1, uint16_t angle2) {
-    double difference = angle2 - angle1;
-    while (difference > 180.0) {
-        difference -= 360.0;
+static float normalizeAngleDifference(uint16_t angle1, uint16_t angle2) {
+    float difference = (float)angle2 - (float)angle1;
+    while (difference > 180.0f) {
+        difference -= 360.0f;
     }
-    while (difference < -180.0) {
-        difference += 360.0;
+    while (difference < -180.0f) {
+        difference += 360.0f;
     }
-
     return difference;
 }
+
 
 /**
  * Нормализует разницу между двумя углами в диапазоне [-180, 180] с использованием float.
