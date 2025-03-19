@@ -77,40 +77,26 @@ int circular_scroll_handle_touch(const struct device *dev, struct gesture_event_
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
-    if (!config->circular_scroll.enabled || !data->circular_scroll.is_tracking) {
+    if (!config->circular_scroll.enabled || 
+        !data->circular_scroll.is_tracking) {
         return -1;
     }
 
     if (event->absolute) {
         uint16_t current_angle = calculate_angle(event, config, data);
-        float angle_diff = normalize_angle_difference(data->circular_scroll.previous_angle, current_angle);
-        
-        /* Применяем коэффициент чувствительности прокрутки.
-         * Если в конфигурации scroll_sensitivity задан, то оно умножается на разницу углов.
-         * Например, 1.0f означает нормальную чувствительность, 0.5f — меньшую, 1.5f — большую. */
-        angle_diff *= config->circular_scroll.scroll_sensitivity;
-        
-        /* Формируем событие прокрутки */
-        event->raw_event_2->code = INPUT_REL_WHEEL;
-        event->raw_event_2->type = INPUT_EV_REL;
-        event->raw_event_2->value = (int16_t)angle_diff;
-
-        LOG_DBG("Touch event: current_angle=%d, angle_diff=%f (after sensitivity), scroll_value=%d",
-                current_angle, angle_diff, event->raw_event_2->value);
-
-        /* Обновляем предыдущий угол */
-        data->circular_scroll.previous_angle = current_angle;
-
-        /* Сбрасываем absolute-событие, чтобы предотвратить перемещение указателя */
-        event->absolute = false;
         event->raw_event_1->code = 0;
         event->raw_event_1->type = 0;
         event->raw_event_1->value = 0;
+
+        event->raw_event_2->code = INPUT_REL_WHEEL;
+        event->raw_event_2->type = INPUT_EV_REL;
+        event->raw_event_2->value = normalizeAngleDifference(current_angle, data->circular_scroll.previous_angle);
+
+        data->circular_scroll.previous_angle = current_angle;
     }
 
     return 0;
 }
-
 int circular_scroll_handle_end(const struct device *dev) {
     struct gesture_data *data = (struct gesture_data *)dev->data;
 
