@@ -12,7 +12,6 @@
 
 #define PI 3.14159265358979323846f
 
-extern volatile bool scroll_mode_active;
 
 LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
 
