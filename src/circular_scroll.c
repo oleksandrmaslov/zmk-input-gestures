@@ -46,7 +46,13 @@ int circular_scroll_handle_start(const struct device *dev, struct gesture_event_
     if (is_touch_on_perimeter(event, config, data)) {
         data->circular_scroll.is_tracking = true;
         data->circular_scroll.previous_angle = calculate_angle(event, config, data);
-        LOG_DBG("starting circular scrolling with angle %d!", data->circular_scroll.previous_angle);
+        // Save the pointer position so it can be frozen during scrolling:
+        data->circular_scroll.fixed_x = event->x;
+        data->circular_scroll.fixed_y = event->y;
+        LOG_DBG("starting circular scrolling with angle %d at fixed position (%d,%d)!",
+                data->circular_scroll.previous_angle,
+                data->circular_scroll.fixed_x,
+                data->circular_scroll.fixed_y);
     }
 
     return 0;
@@ -74,6 +80,7 @@ int circular_scroll_handle_touch(const struct device *dev, struct gesture_event_
         event->x = data->circular_scroll.half_width;
         event->y = data->circular_scroll.half_height;
 
+        event->absolute = false
         // Send only the relative wheel (scroll) event.
         event->raw_event_2->code = INPUT_REL_WHEEL;
         event->raw_event_2->type = INPUT_EV_REL;
