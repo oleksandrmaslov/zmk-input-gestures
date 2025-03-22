@@ -65,22 +65,23 @@ int circular_scroll_handle_touch(const struct device *dev, struct gesture_event_
         uint16_t current_angle = calculate_angle(event, config, data);
         float angle_delta = normalizeAngleDifference(current_angle, data->circular_scroll.previous_angle);
 
-        // Zero out any potential pointer movement
+        // Zero out any pointer movement information.
         event->raw_event_1->code = 0;
         event->raw_event_1->type = 0;
         event->raw_event_1->value = 0;
 
-        // Prevent the absolute coordinates from being processed:
-        // Set the event as non-absolute and freeze its coordinates.
-        event->absolute = false;
-        // Here we set the coordinates to a fixed value (for example, the center of the scroll area)
+        // Force the coordinates to a fixed, neutral value so that they don’t affect the pointer.
         event->x = data->circular_scroll.half_width;
         event->y = data->circular_scroll.half_height;
 
-        // Now send only the relative scroll (wheel) event
+        // Send only the relative wheel (scroll) event.
         event->raw_event_2->code = INPUT_REL_WHEEL;
         event->raw_event_2->type = INPUT_EV_REL;
-        event->raw_event_2->value = (int)angle_delta;  // Optionally add threshold/scaling here
+        event->raw_event_2->value = (int)angle_delta;
+
+        // If possible, mark this event as handled so that other processors ignore it.
+        // For example, if your gesture_event_t structure supports it:
+        // event->handled = true;
 
         data->circular_scroll.previous_angle = current_angle;
     }
