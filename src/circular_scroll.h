@@ -15,8 +15,8 @@ struct circular_scroll_data {
 
     uint16_t half_width, half_height;
     uint32_t inner_radius_squared, outer_radius_squared;
-    uint16_t fixed_x
-    uint16_t fixed_y
+    uint16_t fixed_x;
+    uint16_t fixed_y;
 };
 
 struct circular_scroll_config {
