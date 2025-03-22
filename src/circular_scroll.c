@@ -80,7 +80,7 @@ int circular_scroll_handle_touch(const struct device *dev, struct gesture_event_
         event->x = data->circular_scroll.half_width;
         event->y = data->circular_scroll.half_height;
 
-        event->absolute = false
+        event->absolute = false;
         // Send only the relative wheel (scroll) event.
         event->raw_event_2->code = INPUT_REL_WHEEL;
         event->raw_event_2->type = INPUT_EV_REL;
