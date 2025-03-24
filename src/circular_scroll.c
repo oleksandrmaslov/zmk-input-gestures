@@ -11,7 +11,7 @@ LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
 
 static bool is_touch_on_perimeter(struct gesture_event_t *event, struct gesture_config *config, struct gesture_data *data) {
     uint32_t squared_distance = (event->x - data->circular_scroll.half_width) * (event->x - data->circular_scroll.half_width) + 
-                                (event->y - data->circular_scroll.half_width) * (event->y - data->circular_scroll.half_width);
+                                (event->y - data->circular_scroll.half_height) * (event->y - data->circular_scroll.half_height);
     return (squared_distance >= data->circular_scroll.inner_radius_squared && 
             squared_distance <= data->circular_scroll.outer_radius_squared);
 }
