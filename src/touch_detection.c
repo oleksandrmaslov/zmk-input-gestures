@@ -41,6 +41,9 @@ int touch_detection_handle_event(const struct device *dev, struct input_event *e
     }
 
     if (! data->touch_detection.complete) {
+        // is this true? 
+        // because sometimes we might not want to forward half the events!
+        // for example when waiting during a tap or while a scroll is happening
         return ZMK_INPUT_PROC_CONTINUE;
     }
 
