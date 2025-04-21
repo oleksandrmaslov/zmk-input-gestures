@@ -1,7 +1,3 @@
-> [!WARNING]  
-> gestures are currently completely broken and not in a usable state! Please do not attempt to include them in your board because it *will* fail!
-
-
 
 # ZMK INPUT GESTURES
 

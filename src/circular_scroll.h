@@ -23,6 +23,8 @@ struct circular_scroll_config {
     const uint8_t circular_scroll_rim_percent;
 };
 
+extern volatile bool scroll_mode_active;
+
 handle_init_t circular_scroll_init;
 handle_touch_t circular_scroll_handle_start;
 handle_touch_t  circular_scroll_handle_touch;
