@@ -12,17 +12,9 @@ LOG_MODULE_DECLARE(gestures, CONFIG_ZMK_LOG_LEVEL);
 
 
 int touch_detection_handle_event(const struct device *dev, struct input_event *event, uint32_t param1,
-                                uint32_t param2, struct zmk_input_processor_state *state) {
+                               uint32_t param2, struct zmk_input_processor_state *state) {
     struct gesture_config *config = (struct gesture_config *)dev->config;
     struct gesture_data *data = (struct gesture_data *)dev->data;
-
-    // Suppress X/Y movement if circular scroll is active
-    if (data->circular_scroll.is_tracking &&
-        event->type == INPUT_EV_ABS &&
-        (event->code == INPUT_ABS_X || event->code == INPUT_ABS_Y)) {
-        return ZMK_INPUT_PROC_STOP; // Do not forward this event
-    }
-
     k_work_reschedule(&data->touch_detection.touch_end_timeout_work, K_MSEC(config->touch_detection.wait_for_new_position_ms));
 
     if (event->type != INPUT_EV_ABS && event->type == INPUT_EV_REL) {
