@@ -13,4 +13,3 @@ config INPUT_GESTURES_INIT_PRIORITY
     int "Touchpad gestures initialization priority"
     default INPUT_INIT_PRIORITY
     depends on ZMK_INPUT_PROCESSOR_GESTURES
-
